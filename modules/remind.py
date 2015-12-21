@@ -133,7 +133,7 @@ def remind(phenny, input):
         phenny.reply('Okay, will remind%s' % w)
     else: phenny.reply('Okay, will remind in %s secs' % duration)
 remind.name = 'in'
-remind.example = 'in 15 minutes do work'
+remind.example = '.in 15 minutes do work'
 remind.commands = ['in']
 
 r_time = re.compile(r'^([0-9]{2}[:.][0-9]{2})')
