@@ -87,9 +87,14 @@ def timesince(td):
     return "just now" if len(strings) < 1 else " and ".join(strings) + " ago"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 if __name__ == '__main__':
         print(__doc__.strip())
 =======
 if __name__ == '__main__': 
     print(__doc__.strip())
 >>>>>>> 2dc0b0bdd6fe3ccf2803060591d749acebd4278d
+=======
+if __name__ == '__main__':
+        print(__doc__.strip())
+>>>>>>> 37fbee6fcfdb03e09b028b18cdadf75efc01eaa9
