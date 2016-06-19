@@ -47,20 +47,20 @@ def c(phenny, input):
 c.commands = ['c']
 c.example = '.c 5 + 3'
 
-def py(phenny, input): 
+def py(phenny, input):
    """evaluates a python2 expression via a remote sandbox"""
    query = input.group(2).encode('utf-8')
    uri = 'http://tumbolia.appspot.com/py/'
    answer = web.get(uri + web.quote(query))
-   if answer: 
+   if answer:
       phenny.say(answer)
    else: phenny.reply('Sorry, no result.')
 py.commands = ['py']
 py.example = '.py if not False: print "hello world!"'
 
-def wa(phenny, input): 
+def wa(phenny, input):
     """Query Wolfram Alpha."""
-    
+
     if not input.group(2):
         return phenny.reply("No search term.")
     query = input.group(2)
@@ -81,7 +81,6 @@ def wa(phenny, input):
     phenny.say(answer)
 wa.commands = ['wa']
 wa.example = '.wa answer to life'
-
 
 if __name__ == '__main__':
     print(__doc__.strip())

@@ -43,6 +43,7 @@ def f_seen(phenny, input):
         t = time.strftime('%Y-%m-%d %H:%M:%S UTC', cLastTime.timetuple())
         msg = "I last saw %s at %s (%s) on %s" % (nick, t, dt, cChannel)
         phenny.reply(msg)
+
 f_seen.name = 'seen'
 f_seen.example = '.seen firespeaker'
 f_seen.rule = (['seen'], r'(\S+)')
@@ -85,5 +86,10 @@ def timesince(td):
 
     return "just now" if len(strings) < 1 else " and ".join(strings) + " ago"
 
+<<<<<<< HEAD
 if __name__ == '__main__':
         print(__doc__.strip())
+=======
+if __name__ == '__main__': 
+    print(__doc__.strip())
+>>>>>>> 2dc0b0bdd6fe3ccf2803060591d749acebd4278d
