@@ -376,7 +376,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
         # send OK code
         self.send_response(200)
-        self.send_header("Content-Type", "text/html")
+        self.send_header("Content-type", "text/html")
         self.end_headers()
 
     def getBBFiles(self, filelist):
