@@ -7,7 +7,11 @@ Licensed under the Eiffel Forum License 2.
 http://inamidst.com/phenny/
 """
 
-import sys, os.path, time, imp
+import imp
+import os
+import sys
+import time
+from bot import module_control
 
 def f_reload(phenny, input):
     """Reloads a module, for use by admins only."""
@@ -23,9 +27,9 @@ def f_reload(phenny, input):
         phenny.setup()
         return phenny.reply('done')
 
-    if name not in sys.modules:
+    if name not in phenny.modules:
         return phenny.reply('%s: no such module!' % name)
-    module = sys.modules[name]
+    module = phenny.modules[name]
 
     # Thanks to moot for prodding me on this
     path = module.__file__
@@ -34,12 +38,10 @@ def f_reload(phenny, input):
     if not os.path.isfile(path):
         return phenny.reply('Found %s, but not the source file' % name)
 
-    if hasattr(module, 'teardown'):
-        module.teardown(phenny)
+    module_control(phenny, module, 'teardown')
     module = imp.load_source(name, path)
-    sys.modules[name] = module
-    if hasattr(module, 'setup'):
-        module.setup(phenny)
+    phenny.modules[name] = module
+    module_control(phenny, module, 'setup')
 
     mtime = os.path.getmtime(module.__file__)
     modified = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(mtime))

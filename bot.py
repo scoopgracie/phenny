@@ -35,6 +35,18 @@ def decode(bytes):
         return bytes
     return text
 
+def module_control(phenny, module, func):
+    if hasattr(module, func):
+        try:
+            getattr(module, func)(phenny)
+        except Exception as e:
+            name = os.path.basename(module.__file__)
+            trace = traceback.format_exc()
+            logger.error("Error during %s of %s module:\n%s" % (func, name, trace))
+            return False
+
+    return True
+
 class Phenny(irc.Bot): 
     def __init__(self, config): 
         args = (config.nick, config.name, config.channels, config.password)
@@ -67,28 +79,29 @@ class Phenny(irc.Bot):
 
         tools.setup(self)
 
-        modules = []
+        modules = {}
         excluded_modules = getattr(self.config, 'exclude', [])
+
         for filename in filenames: 
             name = os.path.basename(filename)[:-3]
             if name in excluded_modules: continue
-            # if name in sys.modules: 
-            #     del sys.modules[name]
+
             try:
                 module_loader = importlib.machinery.SourceFileLoader(name, filename)
                 module = module_loader.load_module()
-
-                if hasattr(module, 'setup'):
-                    module.setup(self)
             except Exception as e: 
                 trace = traceback.format_exc()
                 logger.error("Error loading %s module:\n%s" % (name, trace))
-            else: 
+                continue
+
+            if module_control(self, module, 'setup'):
                 self.register(module)
-                modules.append(name)
+                modules[name] = module
+
+        self.modules = modules
 
         if modules: 
-            logger.info('Registered modules: ' + ', '.join(modules))
+            logger.info('Registered modules: ' + ', '.join(modules.keys()))
         else:
             logger.warning("Couldn't find any modules")
 
