@@ -7,10 +7,16 @@ Licensed under the Eiffel Forum License 2.
 http://inamidst.com/phenny/
 """
 
-import sys, re, time, traceback
-import socket, asyncore, asynchat
-import ssl
+import asynchat
+import asyncore
 import logging
+import re
+import socket
+import ssl
+import sys
+import time
+import traceback
+import threading
 from tools import break_up, max_message_length
 
 logger = logging.getLogger('phenny')
@@ -50,7 +56,6 @@ class Bot(asynchat.async_chat):
         self.channels = channels or []
         self.stack = []
 
-        import threading
         self.sending = threading.RLock()
 
     def initiate_send(self):
@@ -58,19 +63,14 @@ class Bot(asynchat.async_chat):
         asynchat.async_chat.initiate_send(self)
         self.sending.release()
 
-    # def push(self, *args, **kargs): 
-    #     asynchat.async_chat.push(self, *args, **kargs)
+    def __write(self, args, text=None):
+        line = b' '.join(args)
 
-    def __write(self, args, text=None): 
-        # print 'PUSH: %r %r %r' % (self, args, text)
-        try: 
-            if text is not None: 
-                # 510 because CR and LF count too, as nyuszika7h points out
-                self.push((b' '.join(args) + b' :' + text)[:510] + b'\r\n')
-            else:
-                self.push(b' '.join(args)[:512] + b'\r\n')
-        except IndexError: 
-            pass
+        if text is not None:
+            line += b' :' + text
+
+        # 510 because CR and LF count too
+        self.push(line[:510] + b'\r\n')
 
     def write(self, args, text=None): 
         """This is a safe version of __write"""
@@ -92,7 +92,6 @@ class Bot(asynchat.async_chat):
             self.__write(args, text)
         except Exception as e:
             raise
-            #pass
 
     def run(self, host, port=6667, ssl=False,
             ipv6=False, ca_certs=None): 
@@ -245,7 +244,6 @@ class Bot(asynchat.async_chat):
 
     def error(self, origin): 
         try: 
-            import traceback
             trace = traceback.format_exc()
             logger.error(str(trace))
             lines = list(reversed(trace.splitlines()))
@@ -266,7 +264,6 @@ class TestBot(Bot):
     def f_ping(self, origin, match, args): 
         delay = m.group(1)
         if delay is not None: 
-            import time
             time.sleep(int(delay))
             self.msg(origin.sender, 'pong (%s)' % delay)
         else: self.msg(origin.sender, 'pong')
