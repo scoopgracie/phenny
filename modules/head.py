@@ -93,9 +93,9 @@ r_url = r'((?:(?:https?:(?://)?)|w{3})[a-zA-Z0-9-._+]+(?::[0-9]+)?(?:/[a-zA-Z0-9
 
 def noteuri(phenny, input):
     uri = input.group(1)
-    if not hasattr(phenny.bot, 'last_seen_uri'):
-        phenny.bot.last_seen_uri = {}
-    phenny.bot.last_seen_uri[input.sender] = uri
+    if not hasattr(phenny, 'last_seen_uri'):
+        phenny.last_seen_uri = {}
+    phenny.last_seen_uri[input.sender] = uri
 noteuri.rule = r'.*?' + r_url
 noteuri.priority = 'low'
 
@@ -158,11 +158,11 @@ def gettitle(phenny, input, uri):
 
     if not hasattr(phenny.config, 'blacklisted_urls'):
         phenny.config.blacklisted_urls = []
-    if not hasattr(phenny.bot, 'blacklisted_urls'):
-        phenny.bot.blacklisted_urls = []
+    if not hasattr(phenny, 'blacklisted_urls'):
+        phenny.blacklisted_urls = []
         for s in phenny.config.blacklisted_urls:
-            phenny.bot.blacklisted_urls.append(re.compile(s))
-    for regex in phenny.bot.blacklisted_urls:
+            phenny.blacklisted_urls.append(re.compile(s))
+    for regex in phenny.blacklisted_urls:
         if regex.match(uri):
             return
 

@@ -222,11 +222,11 @@ def pollsvn(phenny, input):
 					if repo in phenny.config.svn_channels:
 						for chan in phenny.config.svn_channels[repo]:
 							print("chan, msg: %s, %s" % (chan, msg))
-							phenny.bot.msg(chan, msg)
+							phenny.msg(chan, msg)
 				else:
 					for chan in input.chans:
 						print("chan, msg: %s, %s" % (chan, msg))
-						phenny.bot.msg(chan, msg)
+						phenny.msg(chan, msg)
 			if global_revisions:
 				if len(global_revisions) > 0:
 					print("dumping revisions")

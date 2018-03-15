@@ -16,6 +16,7 @@ import sys
 import threading
 import traceback
 import tools
+from tools import GrumbleError, decorate
 
 logger = logging.getLogger('phenny')
 
@@ -196,23 +197,15 @@ class Phenny(irc.Bot):
             for name, func in functions.items():
                 self.bind_command(module, name, func)
 
-    def wrapped(self, origin, text, match): 
-        class PhennyWrapper(object): 
-            def __init__(self, phenny): 
-                self.bot = phenny
+    def wrapped(self, origin, text, match):
+        sender = origin.sender or text
+        delegate = {
+            'reply': lambda msg: self.msg(sender, origin.nick + ': ' + msg),
+            'say': lambda msg: self.msg(sender, msg),
+            'do': lambda msg: self.action(sender, msg),
+        }
 
-            def __getattr__(self, attr): 
-                sender = origin.sender or text
-                if attr == 'reply': 
-                    return (lambda msg: 
-                        self.bot.msg(sender, origin.nick + ': ' + msg))
-                elif attr == 'say': 
-                    return lambda msg: self.bot.msg(sender, msg)
-                elif attr == 'do':
-                    return lambda msg: self.bot.action(sender, msg)
-                return getattr(self.bot, attr)
-
-        return PhennyWrapper(self)
+        return decorate(self, delegate)
 
     def input(self, origin, text, bytes, match, event, args):
         class CommandInput(str): 
@@ -229,14 +222,14 @@ class Phenny(irc.Bot):
                 s.admin = s.nick in self.config.admins
                 s.owner = s.nick == self.config.owner
                 s.chans = self.config.channels
-                #s.bot = self.bot
                 return s
 
         return CommandInput(text, origin, bytes, match, event, args)
 
     def call(self, func, origin, phenny, input): 
-        try: func(phenny, input)
-        except tools.GrumbleError as e:
+        try:
+            func(phenny, input)
+        except GrumbleError as e:
             self.msg(origin.sender, str(e))
         except Exception as e: 
             self.error(origin)

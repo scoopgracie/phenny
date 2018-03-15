@@ -163,6 +163,19 @@ def truncate(text, share=None, max_length=max_message_length):
     else:
         return text[:newline_index].decode('utf-8', 'ignore') + '...'
 
+def decorate(obj, delegate):
+    class Decorator(object):
+        def __getattr__(self, attr):
+            if attr in delegate:
+                return delegate[attr]
+
+            return getattr(obj, attr)
+
+        def __setattr__(self, attr, value):
+            return setattr(obj, attr, value)
+
+    return Decorator()
+
 class GrumbleError(Exception):
     pass
 
