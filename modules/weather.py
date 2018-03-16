@@ -40,8 +40,8 @@ def local(icao, hour, minute):
     uri = ('http://www.flightstats.com/' + 
              'go/Airport/airportDetails.do?airportCode=%s')
     try: bytes = web.get(uri % icao)
-    except AttributeError:
-        raise GrumbleError('A WEBSITE HAS GONE DOWN WTF STUPID WEB')
+    except AttributeError as e:
+        raise GrumbleError('A WEBSITE HAS GONE DOWN WTF STUPID WEB') from e
     m = r_from.search(bytes)
     if m:
         offset = m.group(1)
@@ -88,8 +88,8 @@ def f_weather(phenny, input):
     uri = 'http://tgftp.nws.noaa.gov/data/observations/metar/stations/%s.TXT'
     try:
         bytes = web.get(uri % icao_code)
-    except AttributeError:
-        raise GrumbleError('OH CRAP NOAA HAS GONE DOWN THE WEB IS BROKEN')
+    except AttributeError as e:
+        raise GrumbleError('OH CRAP NOAA HAS GONE DOWN THE WEB IS BROKEN') from e
     except web.HTTPError:
         phenny.say("No NOAA data available for that location.")
         return

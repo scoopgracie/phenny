@@ -13,8 +13,8 @@ def commit(phenny, input):
 
     try:
         msg = web.get("http://whatthecommit.com/index.txt")
-    except:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.")
+    except Exception as e:
+        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
 
     phenny.reply(msg)
 commit.commands = ['commit']

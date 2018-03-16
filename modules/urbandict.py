@@ -16,9 +16,9 @@ def get_definition(phenny, word, to_user=None):
             "http://api.urbandictionary.com/v0/define?term={0}".format(
                 web.quote(word)))
         data = json.loads(data)
-    except:
+    except Exception as e:
         raise GrumbleError(
-            "Urban Dictionary slemped out on me. Try again in a minute.")
+            "Urban Dictionary slemped out on me. Try again in a minute.") from e
 
     if data['result_type'] == 'no_results':
         phenny.say("No results found for {0}".format(word))

@@ -30,9 +30,9 @@ def food(phenny, input):
     try:
         req = web.get(API_URL + '/food/' + web.quote(key.strip()))
         data = json.loads(req)
-    except:
+    except Exception as e:
         raise GrumbleError("Uh oh, I couldn't contact foodforus. HOW WILL WE "\
-                "EAT NOW‽")
+                "EAT NOW‽") from e
 
     restaurants = data['restaurants'][:4]
     times = data['times'][:4]
@@ -66,9 +66,9 @@ def foodvote(phenny, input):
     try:
         req = web.post(API_URL + '/vote', postdata)
         data = json.loads(req)
-    except:
+    except Exception as e:
         raise GrumbleError("Uh oh, I couldn't contact foodforus. HOW WILL WE "\
-                "EAT NOW‽")
+                "EAT NOW‽") from e
 
     if 'error' in data:
         phenny.reply(data['error'])
@@ -82,9 +82,9 @@ def pickfood(phenny, input):
     try:
         req = web.get(API_URL + '/food/' + web.quote(key.strip()))
         data = json.loads(req)
-    except:
+    except Exception as e:
         raise GrumbleError("Uh oh, I couldn't contact foodforus. HOW WILL WE "\
-                "EAT NOW‽")
+                "EAT NOW‽") from e
 
     if len(data['restaurants']) > 0 and len(data['times']) > 0:
         restaurant = data['restaurants'][0]

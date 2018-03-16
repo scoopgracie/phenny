@@ -55,8 +55,8 @@ def write_obj(path, data):
 def read_obj(path, warn_after=None):
     try:
         last_changed = os.path.getmtime(path)
-    except FileNotFoundError:
-        raise GrumbleError()
+    except FileNotFoundError as e:
+        raise GrumbleError() from e
 
     if warn_after and (time() - last_changed) > warn_after:
         raise ResourceWarning('Database out of date')
@@ -65,8 +65,8 @@ def read_obj(path, warn_after=None):
         with open(path, 'rb') as f:
             return pickle.load(f)
     # Pickling may throw anything
-    except:
-        raise GrumbleError()
+    except Exception as e:
+        raise GrumbleError() from e
 
 def db_path(self, name):
     return dot_path('%s-%s.%s.db' % (self.nick, self.config.host, name))

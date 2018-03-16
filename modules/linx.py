@@ -20,8 +20,8 @@ def linx(phenny, input, short=False):
 
     try:
         req = web.post("https://linx.li/upload/remote", {'url': url, 'short': short, 'api_key': phenny.config.linx_api_key})
-    except (web.HTTPError, web.ConnectionError):
-        raise GrumbleError("Couldn't reach linx.li")
+    except (web.HTTPError, web.ConnectionError) as e:
+        raise GrumbleError("Couldn't reach linx.li") from e
 
     data = json.loads(req)
     if len(data) <= 0 or not data['success']:

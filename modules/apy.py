@@ -36,8 +36,8 @@ def handle_error(error):
     response = error.read()
     err = json.loads(response.decode('utf-8'))
     if 'explanation' in err:
-        raise GrumbleError('Error {:d}: {:s}'.format(err['code'], err['explanation']))
-    raise GrumbleError('Error {:d}: {:s}'.format(err['code'], err['message']))
+        raise GrumbleError('Error {:d}: {:s}'.format(err['code'], err['explanation'])) from error
+    raise GrumbleError('Error {:d}: {:s}'.format(err['code'], err['message'])) from error
 
 
 def check_no_data(resp_data):

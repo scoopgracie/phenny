@@ -31,9 +31,9 @@ from modules import more
 #                .format(web.quote(word)))
 #        data = req.read().decode('utf-8')
 #        data = json.loads(data)
-#    except (HTTPError, IOError, ValueError):
+#    except (HTTPError, IOError, ValueError) as e:
 #        raise GrumbleError(
-#                "Urban Dictionary slemped out on me. Try again in a minute.")
+#                "Urban Dictionary slemped out on me. Try again in a minute.") from e
 #
 #    if data['result_type'] == 'no_results':
 #        phenny.say("No results found for {0}".format(word))
@@ -90,9 +90,8 @@ def randquote_fetcher(phenny, topic, to_user):
             req = opener.open("http://quotes.firespeaker.org/random.php?topic=%s" % (web.quote(topic)))
         data = req.read().decode('utf-8')
         data = json.loads(data)
-    except (HTTPError, IOError, ValueError):
-        raise GrumbleError(
-                "Firespeaker.org down?  Try again later.")
+    except (HTTPError, IOError, ValueError) as e:
+        raise GrumbleError("Firespeaker.org down? Try again later.") from e
 
     if len(data) == 0:
         phenny.say("No results found")

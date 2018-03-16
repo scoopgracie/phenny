@@ -18,8 +18,8 @@ def rule34(phenny, input):
 
     try:
         req = web.get("http://rule34.xxx/index.php?page=post&s=list&tags={0}".format(web.quote(q)))
-    except:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.")
+    except Exception as e:
+        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
 
     doc = lxml.html.fromstring(req)
     doc.make_links_absolute('http://rule34.xxx/')
@@ -30,8 +30,8 @@ def rule34(phenny, input):
 
     try:
         link = thumbs[0].find('a').attrib['href']
-    except AttributeError:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.")
+    except AttributeError as e:
+        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
 
     response = '!!NSFW!! -> {0} <- !!NSFW!!'.format(link)
     phenny.reply(response)

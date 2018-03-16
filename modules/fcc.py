@@ -19,8 +19,8 @@ def fcc(phenny, input):
     try:
         req = web.get("http://callook.info/{0}/json".format(web.quote(callsign)))
         data = json.loads(req)
-    except:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.")
+    except Exception as e:
+        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
 
     if len(data) <= 0 or data['status'] == 'INVALID':
         phenny.reply('No results found for {0}'.format(callsign))

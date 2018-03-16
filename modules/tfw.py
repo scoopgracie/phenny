@@ -32,8 +32,8 @@ def tfw(phenny, input, fahrenheit=False, celsius=False, mev=False):
     uri = 'http://tgftp.nws.noaa.gov/data/observations/metar/stations/%s.TXT'
     try:
         bytes = web.get(uri % icao_code)
-    except AttributeError:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.")
+    except AttributeError as e:
+        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
     except web.HTTPError:
         phenny.say("WHERE THE FUCK IS THAT? Try another location.")
         return
