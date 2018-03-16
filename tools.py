@@ -222,8 +222,15 @@ def deprecated(old):
     new.__name__ = old.__name__
     return new
 
-def generate_report(repo, author, comment, modified_paths, added_paths, removed_paths, rev, date=""):
+def generate_report(repo, author, comment, modified_paths, added_paths, removed_paths, rev, date=None):
+    modified_paths = ['/' + x for x in modified_paths]
+    added_paths = ['/' + x for x in added_paths]
+    removed_paths = ['/' + x for x in removed_paths]
+
     paths = modified_paths + added_paths + removed_paths
+
+    if not paths:
+        return
 
     if comment is None:
         comment = "No commit message provided!"
@@ -232,48 +239,36 @@ def generate_report(repo, author, comment, modified_paths, added_paths, removed_
 
     basepath = os.path.commonprefix(paths)
 
-    if len(basepath) > 0:
-        if basepath[-1] != "/":
-            basepath = basepath.split("/")
-            basepath.pop()
-            basepath = '/'.join(basepath) + "/"
+    if basepath and basepath[-1] != '/':
+        basepath = basepath.split('/')[:-1]
+        basepath = '/'.join(basepath) + '/'
 
     text_paths = []
-    if len(paths) > 0:
-        for path in paths:
-            addition = ""
-            if path in added_paths:
-                addition = " (+)"
-            elif path in removed_paths:
-                addition = " (-)"
-            text_paths.append(os.path.relpath(path, basepath) + addition)
-        if len(text_paths) > 1:
-            if len(text_paths) <= 3: 
-                final_path = "%s: %s" % (basepath, ', '.join(text_paths))
-            else:
-                final_path = "%s: %s" % (basepath, ', '.join([text_paths[0], text_paths[1]]) + ' and %s other files' % str(len(text_paths) - 2))
+
+    for path in paths:
+        addition = ''
+
+        if path in added_paths:
+            addition = " (+)"
+        elif path in removed_paths:
+            addition = " (-)"
+
+        text_paths.append(os.path.relpath(path, basepath) + addition)
+
+    if len(text_paths) > 1:
+        if len(text_paths) <= 3:
+            final_path = "%s: %s" % (basepath, ', '.join(text_paths))
         else:
-            final_path = paths[0]
-            if final_path in added_paths:
-                final_path += " (+)"
-            elif final_path in removed_paths:
-                final_path += " (-)"
-            # if a file's modified, we don't want to say anything
-            #else:
-            #    final_path += " 0"
-            # but we do want to set the string if it hasn't been set, I guess?
-            else:
-                final_path += ""
-        # the following used to be outside the big if
-        # but it would try to report revs with empty info
-        # ... which we don't want
-        if date == "":
-            msg = "%s: %s * %s: %s: %s" % (repo, author, rev, final_path, comment.strip())
-        else:
-            msg = "[%s] %s: %s * %s: %s: %s" % (date, repo, author, rev, final_path, comment.strip())
-        return msg
-    #else: final_path = "empty"
-    #if final_path is None: final_path = "empty"
+            final_path = "%s: %s" % (basepath, ', '.join(text_paths[:2]) + " and %s other files" % str(len(text_paths) - 2))
+    else:
+        final_path = paths[0] + text_paths[0]
+
+    msg = "%s: %s * %s: %s: %s" % (repo, author, rev, final_path, comment.strip())
+
+    if date:
+        msg = "[%s] %s" % (date, msg)
+
+    return msg
 
 def translate(phenny, translate_me, input_lang, output_lang='en'): 
     input_lang, output_lang = urllib.parse.quote(input_lang), urllib.parse.quote(output_lang)
