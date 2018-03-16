@@ -167,7 +167,8 @@ def list_report(phenny, input):
                 valid_syntax = True
 
     if not valid_syntax:
-        phenny.reply(syntax.format(input.group(1), ', '.join(phenny.config.mailing_lists.keys())))
+        names = sorted(phenny.config.mailing_lists.keys())
+        phenny.reply(syntax.format(input.group(1), ', '.join(names)))
 
 list_report.name = "mailing list reporter"
 list_report.rule = r'.(mailinglist|ml)(?:\s(poll|last(?:\s([\w-]+))?))?'

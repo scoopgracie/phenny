@@ -102,7 +102,7 @@ class Phenny(irc.Bot):
         self.modules = modules
 
         if modules: 
-            logger.info('Registered modules: ' + ', '.join(modules.keys()))
+            logger.info('Registered modules: ' + ', '.join(sorted(modules.keys())))
         else:
             logger.warning("Couldn't find any modules")
 
