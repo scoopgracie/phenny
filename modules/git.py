@@ -394,12 +394,13 @@ def setup_server(phenny):
 
     global httpd
 
-    if not httpd:
-        MyHandler.phenny = phenny
-        httpd = PortReuseTCPServer(("", PORT), MyHandler)
-        Thread(target=httpd.serve_forever).start()
+    if httpd:
+        return
 
-    phenny.say("Server is up and running on port %s" % PORT)
+    MyHandler.phenny = phenny
+    httpd = PortReuseTCPServer(("", PORT), MyHandler)
+    Thread(target=httpd.serve_forever).start()
+    phenny.say("Git hook started on port %s" % PORT)
 
 
 def auto_start(phenny, input):
