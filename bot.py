@@ -16,7 +16,7 @@ import sys
 import threading
 import traceback
 import tools
-from tools import GrumbleError, decorate
+from tools import GrumbleError, decorate, rephrase_errors
 
 logger = logging.getLogger('phenny')
 
@@ -228,7 +228,7 @@ class Phenny(irc.Bot):
 
     def call(self, func, origin, phenny, input): 
         try:
-            func(phenny, input)
+            rephrase_errors(func, phenny, input)
         except GrumbleError as e:
             self.msg(origin.sender, str(e))
         except Exception as e: 

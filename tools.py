@@ -202,6 +202,18 @@ def decorate(obj, delegate):
 class GrumbleError(Exception):
     pass
 
+def rephrase_errors(fn, *args, **kw):
+    '''Simplfiy error messages for well-known exceptions'''
+
+    try:
+        return fn(*args, **kw)
+    except ConnectionError as e:
+        raise GrumbleError("Connection issue: %s" % str(e))
+    except HTTPError as e:
+        raise GrumbleError("HTTP protocol issue: %s" % str(e))
+    except Timeout:
+        raise GrumbleError("Network timed out")
+
 def calling_module():
     frame = inspect.stack()[2]
     module = inspect.getmodule(frame[0])
