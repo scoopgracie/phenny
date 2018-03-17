@@ -183,7 +183,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 event_types = None
 
-            if event_types and (event not in event_types):
+            if (event_types is not None) and (event not in event_types):
                 return True
 
             channels = config.git_channels.get(event, channels)
