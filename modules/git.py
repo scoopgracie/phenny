@@ -400,7 +400,6 @@ def setup_server(phenny):
     MyHandler.phenny = phenny
     httpd = PortReuseTCPServer(("", PORT), MyHandler)
     Thread(target=httpd.serve_forever).start()
-    phenny.say("Git hook started on port %s" % PORT)
 
 
 def auto_start(phenny, input):
@@ -415,7 +414,6 @@ auto_start.event = 'JOIN'
 
 def teardown(phenny):
     close_socket()
-    phenny.say("Server has stopped on port %s" % PORT)
 
 
 def gitserver(phenny, input):
