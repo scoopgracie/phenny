@@ -12,7 +12,9 @@ python:
     - "3.6"
     - "nightly"
 
-script: nosetests -v --with-coverage
+script:
+    - ./sanity-checks.sh
+    - nosetests -v --with-coverage
 
 before_cache: clean-cache.sh
 

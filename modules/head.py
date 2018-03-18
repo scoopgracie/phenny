@@ -16,9 +16,9 @@ import web
 from web import REQUEST_TIMEOUT
 from tools import deprecated
 
-from modules.apertium_wiki import awik
-from modules.wikipedia import wikipedia
-from modules.wiktionary import w
+from modules import apertium_wiki
+from modules import wikipedia
+from modules import wiktionary
 
 
 # seconds until a URL title will be repeated if said multiple times
@@ -128,14 +128,14 @@ def gettitle(phenny, input, uri):
 
     if uri.startswith('http://wiki.apertium.org/wiki/'):
         item = uri[len('http://wiki.apertium.org/wiki/'):]
-        return awik(phenny, re.match(r'(blahblah)?(.*)', item))
+        return apertium_wiki.awik(phenny, re.match(r'(blahblah)?(.*)', item))
     if re.match(r'https?://en.wiktionary.org/wiki/(.*)', uri):
         item = re.match(r'https?://en.wiktionary.org/wiki/(.*)', uri).group(1)
-        return w(phenny, re.match(r'(blahblah)?(.*)', web.unquote(item)))
+        return wiktionary.w(phenny, re.match(r'(blahblah)?(.*)', web.unquote(item)))
     if re.match(r'https?://([a-z]{2,3}).wikipedia.org/wiki/(.*)', uri):
         match = re.match(r'https?://([a-z]{2,3}).wikipedia.org/wiki/(.*)', uri)
         lang, page = match.group(1), match.group(2)
-        return wikipedia(phenny, input, page, lang)
+        return wikipedia.wikipedia(phenny, input, page, lang)
 
     parts = uri.split(".")
     start = parts[0]

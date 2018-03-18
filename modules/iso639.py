@@ -5,8 +5,7 @@ author: mutantmonkey <mutantmonkey@mutantmonkey.in>
 """
 
 import random
-from modules.ethnologue import setup as ethno_setup
-from modules.ethnologue import write_ethnologue_codes
+from modules import ethnologue
 from lxml import html, etree
 import web
 import os
@@ -138,7 +137,7 @@ def scrape_wiki_codes_convert():
 
 def refresh_database(phenny, raw=None):
     if raw.admin or raw is None:
-        write_ethnologue_codes(phenny)
+        ethnologue.write_ethnologue_codes(phenny)
         phenny.iso_data = scrape_wiki_codes()
         phenny.iso_data.update(phenny.ethno_data)
         phenny.say('ISO code database successfully written')
@@ -158,7 +157,7 @@ def thread_check(phenny, raw):
 
 def setup(phenny):
     # populate ethnologue codes
-    ethno_setup(phenny)
+    ethnologue.setup(phenny)
 
     phenny.iso_data = scrape_wiki_codes()
     phenny.iso_data.update(phenny.ethno_data)
