@@ -14,7 +14,7 @@ python:
 
 script:
     - ./sanity-checks.sh
-    - nosetests -v --with-coverage
+    - nosetests -v --with-coverage --cover-erase --cover-min-percentage=60
 
 before_cache: clean-cache.sh
 
