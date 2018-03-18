@@ -8,7 +8,7 @@ import re
 import urllib.request
 import json
 import web
-from tools import GrumbleError, translate
+from tools import GrumbleError
 from modules import more
 import operator
 from humanize import naturaldelta
@@ -53,12 +53,18 @@ def translate(phenny, translate_me, input_lang, output_lang='en'):
     translate_me = web.quote(translate_me)
 
     try:
+        apy_url = phenny.config.APy_url
+    except:
+        apy_url = 'http://apy.projectjj.com'
+
+    try:
         response = opener.open('{:s}/translate?q={:s}&langpair={:s}|{:s}'.format(
-            phenny.config.APy_url, translate_me, input_lang, output_lang)).read()
+            apy_url, translate_me, input_lang, output_lang)).read()
     except urllib.error.HTTPError as error:
         handle_error(error)
 
     responseArray = json.loads(response.decode('utf-8'))
+
     if responseArray['responseData']['translatedText'] == []:
         raise GrumbleError(Apy_errorData)
 

@@ -10,8 +10,6 @@ http://inamidst.com/phenny/
 import os
 import re
 import base64
-import urllib.parse
-import json
 import sqlite3
 import logging
 from requests.exceptions import ConnectionError, HTTPError, Timeout
@@ -23,10 +21,6 @@ from time import time
 
 logger = logging.getLogger('phenny')
 
-
-headers = {
-   'User-Agent': 'Mozilla/5.0' + '(X11; U; Linux i686)' + 'Gecko/20071127 Firefox/2.0.0.11'
-}
 
 # maximum message length (see msg() in irc.py)
 # overriden if max_message_length exists in the config
@@ -282,24 +276,6 @@ def generate_report(repo, author, comment, modified_paths, added_paths, removed_
         msg = "[%s] %s" % (date, msg)
 
     return msg
-
-def translate(phenny, translate_me, input_lang, output_lang='en'): 
-    input_lang, output_lang = urllib.parse.quote(input_lang), urllib.parse.quote(output_lang)
-    translate_me = urllib.parse.quote(translate_me)
-    response = ""
-    if hasattr(phenny.config, 'translate_url'):
-        response = get_page(self.phenny.config.translate_url, '/translate?q=%s&langpair=%s|%s' % (translate_me, input_lang, output_lang))
-    else:
-        response = get_page('apy.projectjj.com', '/translate?q=%s&langpair=%s|%s' % (translate_me, input_lang, output_lang), port=2737)	
-
-    responseArray = json.loads(response)
-    if int(responseArray['responseStatus']) != 200:
-        raise GrumbleError('APIerrorHttp' % (responseArray['responseStatus'], responseArray['responseDetails']))
-    if responseArray['responseData']['translatedText'] == []:
-        raise GrumbleError('APIerrorData')
-
-    translated_text = responseArray['responseData']['translatedText']
-    return translated_text
 
 if __name__ == '__main__': 
     print(__doc__.strip())

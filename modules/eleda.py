@@ -11,8 +11,8 @@ import json
 import sys
 import urllib.request, urllib.parse, urllib.error
 import web
-from tools import GrumbleError, translate
-from modules import caseless_equal
+from tools import GrumbleError
+from modules import caseless_equal, apy
 from web import get_page
 
 follows = []
@@ -123,7 +123,7 @@ def checkMessages(phenny, input): #filter through each message in the channel
 				if (i.nick, i.dir) not in translations:
 					#this user is being followed, translate them
 					direction = '-'.join(i.dir)
-					translations[(i.nick, i.dir)] = translate(phenny, input.group(0), i.dir[0], i.dir[1])
+					translations[(i.nick, i.dir)] = apy.translate(phenny, input.group(0), i.dir[0], i.dir[1])
 					translations[(i.nick, i.dir)] = translations[(i.nick, i.dir)].replace('*', '')
 				if translations[(i.nick, i.dir)] != input.group(0):
 					#don't bother sending a notice if the input is the same as the output
