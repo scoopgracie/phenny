@@ -37,16 +37,20 @@ def decode(bytes):
     return text
 
 def module_control(phenny, module, func):
-    if hasattr(module, func):
-        try:
-            getattr(module, func)(phenny)
-        except Exception as e:
-            name = os.path.basename(module.__file__)
-            trace = traceback.format_exc()
-            logger.error("Error during %s of %s module:\n%s" % (func, name, trace))
-            return False
+    if not hasattr(module, func):
+        return True
 
-    return True
+    try:
+        rephrase_errors(getattr(module, func), phenny)
+        return True
+    except GrumbleError as e:
+        desc = str(e)
+    except Exception as e:
+        desc = traceback.format_exc()
+
+    name = os.path.basename(module.__file__)
+    logger.error("Error during %s of %s module:\n%s" % (func, name, desc))
+    return False
 
 class Phenny(irc.Bot): 
     def __init__(self, config): 

@@ -14,6 +14,7 @@ import urllib.parse
 import json
 import sqlite3
 import logging
+from requests.exceptions import ConnectionError, HTTPError, Timeout
 import socket
 import socketserver
 import pickle
