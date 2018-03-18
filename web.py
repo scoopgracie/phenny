@@ -100,12 +100,6 @@ def get(url, cache=False, headers={}, verify=True, timeout=REQUEST_TIMEOUT, **kw
                     return response.text
     return response.text
 
-def get_page(domain, url, encoding='utf-8', port=80):
-    conn = http.client.HTTPConnection(domain, port, timeout=REQUEST_TIMEOUT)
-    conn.request("GET", url, headers=headers)
-    res = conn.getresponse()
-    return res.read().decode(encoding)
-
 def head(uri, headers={}, verify=True, **kwargs): 
     if not uri.startswith('http'): 
         return

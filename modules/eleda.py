@@ -13,13 +13,18 @@ import urllib.request, urllib.parse, urllib.error
 import web
 from tools import GrumbleError
 from modules import caseless_equal, apy
-from web import get_page
 
 follows = []
 
 headers = {
    'User-Agent': 'Mozilla/5.0' + '(X11; U; Linux i686)' + 'Gecko/20071127 Firefox/2.0.0.11'
 }
+
+def get_page(domain, url, encoding='utf-8', port=80):
+    conn = http.client.HTTPConnection(domain, port, timeout=REQUEST_TIMEOUT)
+    conn.request("GET", url, headers=headers)
+    res = conn.getresponse()
+    return res.read().decode(encoding)
 
 class Eleda(object):
 	sender = ""
