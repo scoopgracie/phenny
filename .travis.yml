@@ -2,6 +2,11 @@ language: python
 
 sudo: false
 
+env:
+    - NOSE_VERBOSE=2
+    - NOSE_WITH_COVERAGE=1
+    - NOSE_COVER_MIN_PERCENTAGE=60
+
 cache:
     pip: true
     directories:
@@ -14,9 +19,9 @@ python:
 
 script:
     - ./sanity-checks.sh
-    - nosetests -v --with-coverage --cover-erase --cover-min-percentage=60
+    - nosetests --cover-erase
 
-before_cache: clean-cache.sh
+before_cache: ./clean-cache.sh
 
 notifications:
     irc:
