@@ -13,22 +13,24 @@ import sys
 import time
 from bot import module_control
 
+def restart(phenny):
+    for module in phenny.modules:
+        module_control(phenny, module, 'teardown')
+
+    os.execv('phenny', sys.argv)
+
 def f_reload(phenny, input):
     """Reloads a module, for use by admins only."""
-    if not input.admin: return
+    if not (input.admin or input.owner): return
 
     name = input.group(2)
-    if name == phenny.config.owner:
-        return phenny.reply('What?')
 
     if (not name) or (name == '*'):
-        phenny.variables = None
-        phenny.commands = None
-        phenny.setup()
-        return phenny.reply('done')
+        restart(phenny)
+        return
 
     if name not in phenny.modules:
-        return phenny.reply('%s: no such module!' % name)
+        return phenny.reply("No '%s' module loaded" % name)
     module = phenny.modules[name]
 
     # Thanks to moot for prodding me on this
