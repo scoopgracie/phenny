@@ -156,7 +156,7 @@ def recentcommits(phenny, input):
 		rev = poller.get_last_revision()
 		msg = poller.generateReport(rev, True)
 		url = poller.sourceforgeURL(rev)
-		phenny.say(truncate(msg, ' ' + url) + ' ' + url)
+		phenny.say(truncate(msg, '%s ' + url))
 recentcommits.name = 'recent'
 recentcommits.rule = ('$nick', 'recent')
 recentcommits.example = 'begiak: recent'
@@ -185,7 +185,7 @@ def retrieve_commit_svn(phenny, input):
 	poller = SVNPoller(repo, phenny.config.svn_repositories[repo])
 	msg = poller.generateReport(rev, True)
 	url = poller.sourceforgeURL(rev)
-	phenny.say(truncate(msg, ' ' + url) + ' ' + url)
+	phenny.say(truncate(msg, '%s ' + url))
 retrieve_commit_svn.rule = ('$nick', 'info(?: +(.*))')
 
 def pollsvn(phenny, input):

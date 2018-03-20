@@ -76,11 +76,9 @@ def apertium_wiki(phenny, input, origterm, to_nick=None):
     sentence = '"' + sentences[0] + '"'
 
     if to_nick:
-        sentence = truncate(sentence, to_nick + ', ' + ' - ' + wikiuri.format(format_term_display(term)))
-        phenny.say(to_nick + ', ' + sentence + ' - ' + wikiuri.format(format_term_display(term)))
+        phenny.say(truncate(sentence, to_nick + ', %s - ' + wikiuri.format(format_term_display(term))))
     else:
-        sentence = truncate(sentence, ' - ' + wikiuri.format(format_term_display(term)))
-        phenny.say(sentence + ' - ' + wikiuri.format(format_term_display(term)))
+        phenny.say(truncate(sentence, '%s - ' + wikiuri.format(format_term_display(term))))
 
 
 def awik(phenny, input):

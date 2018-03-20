@@ -68,7 +68,7 @@ def parse_wiki_page(url, term, section = None):
     sentences = [x.strip() for x in text.text_content().split(".")]
     sentence = '"' + sentences[0] + '"'
 
-    return truncate(sentence, ' - ' + url) + ' - ' + url
+    return truncate(sentence, '%s - ' + url)
 
 def wikipedia(phenny, input, origterm, lang, to_user = None):
     origterm = origterm.strip()

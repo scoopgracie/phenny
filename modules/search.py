@@ -66,7 +66,7 @@ def search(phenny, input):
         return phenny.say('Sorry, no result.')
     # Removes html tags, if exist
     answer = re.sub('<.+?>', '', answer)
-    phenny.say(truncate(answer, share=' - ' + r['AbstractURL']) + ' - ' + answer_url)
+    phenny.say(truncate(answer, '%s - ' + answer_url))
 search.commands = ['search']
 
 def suggest(phenny, input):

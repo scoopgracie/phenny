@@ -159,27 +159,33 @@ def break_up(text, max_length=max_message_length, max_count=None):
 
     return parts
 
-def truncate(text, share=None, max_length=max_message_length):
+def truncate(text, template=None, max_length=max_message_length):
     text = encodeIfNot(text)
 
-    if share:
-        share = encodeIfNot(share)
-        max_length -= len(share)
+    if template:
+        max_length -= len(template.encode('utf-8')) - len(b'%s')
 
     if len(text) <= max_length:
-        return text.decode('utf-8', 'ignore')
-
-    max_length -= 3
-
-    space_index = text.rfind(b' ', 0, max_length)
-    newline_index = text.rfind(b'\n', 0, max_length)
-
-    if space_index == -1 and newline_index == -1:
-        return text[:max_length].decode('utf-8', 'ignore') + '...'
-    elif space_index > newline_index:
-        return text[:space_index].decode('utf-8', 'ignore') + '...'
+        text = text.decode('utf-8', 'ignore')
     else:
-        return text[:newline_index].decode('utf-8', 'ignore') + '...'
+        max_length -= 3
+
+        space_index = text.rfind(b' ', 0, max_length)
+        newline_index = text.rfind(b'\n', 0, max_length)
+
+        if space_index == -1 and newline_index == -1:
+            text = text[:max_length]
+        elif space_index > newline_index:
+            text = text[:space_index]
+        else:
+            text = text[:newline_index]
+
+        text = text.decode('utf-8', 'ignore') + '...'
+
+    if template:
+        return template % text
+    else:
+        return text
 
 def decorate(obj, delegate):
     class Decorator(object):
