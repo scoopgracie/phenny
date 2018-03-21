@@ -15,7 +15,7 @@ class TestArchwiki(unittest.TestCase):
 
     @catch_timeout
     def test_awik(self):
-        self.input.groups.return_value = ['', "KVM"]
+        self.input.groups.return_value = ["KVM"]
         archwiki.awik(self.phenny, self.input)
         out = self.phenny.say.call_args[0][0]
         self.assertIn('https://wiki.archlinux.org/index.php/KVM', out)
@@ -23,7 +23,7 @@ class TestArchwiki(unittest.TestCase):
     @catch_timeout
     def test_awik_invalid(self):
         term = "KVM#Enabling_KSM"
-        self.input.groups.return_value = ['', term]
+        self.input.groups.return_value = [term]
         archwiki.awik(self.phenny, self.input)
         self.phenny.say.assert_called_once_with( "Can't find anything in "\
                 "the ArchWiki for \"{0}\".".format(term))
@@ -31,7 +31,7 @@ class TestArchwiki(unittest.TestCase):
     @catch_timeout
     def test_awik_none(self):
         term = "Ajgoajh"
-        self.input.groups.return_value = ['', term]
+        self.input.groups.return_value = [term]
         archwiki.awik(self.phenny, self.input)
         self.phenny.say.assert_called_once_with( "Can't find anything in "\
                 "the ArchWiki for \"{0}\".".format(term))

@@ -14,7 +14,6 @@ import requests
 from html.entities import name2codepoint
 import web
 from web import REQUEST_TIMEOUT
-from tools import deprecated
 
 from modules import apertium_wiki
 from modules import wikipedia

@@ -11,7 +11,7 @@ import re
 import metar
 import json
 import web
-from tools import deprecated, GrumbleError
+from tools import GrumbleError
 
 r_from = re.compile(r'(?i)([+-]\d+):00 from')
 

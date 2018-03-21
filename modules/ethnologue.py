@@ -60,7 +60,7 @@ def parse_num_speakers(s):
 
 def ethnologue(phenny, input):
     """.ethnologue <lg> - gives ethnologue info from partial language name or iso639"""
-    raw = str(input.group(2)).lower()
+    raw = str(input.group(1)).lower()
     iso = []
     if len(raw) == 3 and raw in phenny.ethno_data:
         iso.append(raw)

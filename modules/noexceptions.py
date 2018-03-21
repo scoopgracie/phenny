@@ -7,7 +7,6 @@ import random
 
 def noexceptions(phenny, input):
    """Tells someone there aren't ever any exceptions"""
-   #whouser = input.groups()[1]
    whouser = input.nick
    if not whouser:
       return phenny.say('NO EXCEPTIONS!')
@@ -15,14 +14,12 @@ def noexceptions(phenny, input):
    response = "NO EXCEPTIONS, %s!"
    phenny.say(response % whouser)
 
-#noexceptions.commands = ['noexceptions']
-#noexceptions.example = '.noexceptions firespeaker'
 noexceptions.rule = r'.*(?i)((no|any|most|some|other|many|lot of|few|several|certain|никак.*|нет) (exception|исключени)).*$'
 noexceptions.priority = 'low'
 
 def harglebargleP(phenny, input):
    """Tells someone hargle bargle (cf. http://nedroidcomics.livejournal.com/224029.html , http://quotes.firespeaker.org/?id=1415)"""
-   whouser = input.groups()[1]
+   whouser = input.group(1)
    if not whouser:
       return phenny.say('HARGLE BARGLE!')
    response = "HARGLE BARGLE, %s!"

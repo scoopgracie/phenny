@@ -11,7 +11,6 @@ import logging
 import os
 import sqlite3
 import time
-from tools import deprecated
 
 logger = logging.getLogger('phenny')
 

@@ -22,7 +22,7 @@ wikisearch = 'https://vtluug.org/wiki/Special:Search?' \
 def vtluug(phenny, input): 
     """.vtluug <term> - Look up something on the VTLUUG wiki."""
 
-    origterm = input.groups()[1]
+    origterm = input.group(1)
     if not origterm: 
         return phenny.say('Perhaps you meant ".vtluug VT-Wireless"?')
 

@@ -224,7 +224,7 @@ def pollsvn(phenny, input):
 							print("chan, msg: %s, %s" % (chan, msg))
 							phenny.msg(chan, msg)
 				else:
-					for chan in input.chans:
+					for chan in phenny.config.channels:
 						print("chan, msg: %s, %s" % (chan, msg))
 						phenny.msg(chan, msg)
 			if global_revisions:

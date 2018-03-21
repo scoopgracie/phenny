@@ -20,7 +20,7 @@ wikisearch = 'https://wiki.archlinux.org/index.php/Special:Search?' \
                           + 'search={0}&fulltext=Search'
 
 def awik(phenny, input): 
-    origterm = input.groups()[1]
+    origterm = input.groups()[0]
     if not origterm: 
         return phenny.say('Perhaps you meant ".awik dwm"?')
 

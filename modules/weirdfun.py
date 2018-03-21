@@ -11,7 +11,7 @@ otherweird = "zfe"
 def fight(phenny, input):
     """Have begiak fight someone for you."""
     global otherweird
-    whouser = input.groups()[1]
+    whouser = input.group(1)
     already = False
     if whouser:
         otherweird = whouser
@@ -33,7 +33,7 @@ fight.example = '.fight ChanServ'
 def hug(phenny, input):
     """Have begiak hug someone for you."""
     global otherweird
-    whouser = input.groups()[1]
+    whouser = input.group(1)
     if whouser:
         otherweird = whouser
 

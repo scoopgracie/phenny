@@ -220,21 +220,6 @@ def calling_module():
     module = inspect.getmodule(frame[0])
     return module.__name__
 
-def deprecated(old): 
-    def new(phenny, input, old=old): 
-        self = phenny
-        origin = type('Origin', (object,), {
-            'sender': input.sender, 
-            'nick': input.nick
-        })()
-        match = input.match
-        args = [input.bytes, input.sender, '@@']
-
-        old(self, origin, match, args)
-    new.__module__ = old.__module__
-    new.__name__ = old.__name__
-    return new
-
 def generate_report(repo, author, comment, modified_paths, added_paths, removed_paths, rev, date=None):
     modified_paths = ['/' + x for x in modified_paths]
     added_paths = ['/' + x for x in added_paths]

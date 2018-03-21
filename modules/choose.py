@@ -9,7 +9,7 @@ import re
 
 def choose(phenny, input):
     """.choose <red> <blue> - for when you just can't decide"""
-    origterm = input.groups()[1]
+    origterm = input.group(1)
     if not origterm:
         return phenny.say(".choose <red> <blue> - for when you just can't decide")
     c = re.findall(r'([^, ]+)', origterm)

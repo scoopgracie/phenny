@@ -173,26 +173,23 @@ class Phenny(irc.Bot):
                 elif len(func.rule) == 2 and isinstance(func.rule[0], list):
                     prefix = self.config.prefix
                     commands, pattern = func.rule
-                    for command in commands:
-                        command = r'(%s)\b(?: +(?:%s))?' % (command, pattern)
-                        regexp = re.compile(prefix + command)
-                        self.bind(module, name, func, regexp)
+                    command = r'(?:%s)(?: +(%s))?' % ('|'.join(commands), pattern)
+                    regexp = re.compile(prefix + command)
+                    self.bind(module, name, func, regexp)
 
                 # 3) e.g. ('$nick', ['p', 'q'], '(.*)')
                 elif len(func.rule) == 3:
                     prefix, commands, pattern = func.rule
                     prefix = sub(prefix)
-                    for command in commands:
-                        command = r'(%s) +' % command
-                        regexp = re.compile(prefix + command + pattern)
-                        self.bind(module, name, func, regexp)
+                    command = r'(?:%s) +' % '|'.join(commands)
+                    regexp = re.compile(prefix + command + pattern)
+                    self.bind(module, name, func, regexp)
 
         if hasattr(func, 'commands'):
-            for command in func.commands:
-                template = r'^%s(%s)(?: +(.*))?$'
-                pattern = template % (self.config.prefix, command)
-                regexp = re.compile(pattern)
-                self.bind(module, name, func, regexp)
+            template = r'(?:%s)(?: +(.+))?'
+            pattern = template % '|'.join(func.commands)
+            regexp = re.compile(self.config.prefix + pattern)
+            self.bind(module, name, func, regexp)
 
     def bind_commands(self):
         self.commands = {'high': {}, 'medium': {}, 'low': {}}
@@ -211,24 +208,21 @@ class Phenny(irc.Bot):
 
         return decorate(self, delegate)
 
-    def input(self, origin, text, bytes, match, event, args):
+    def input(self, origin, text, bytes, match, args):
         class CommandInput(str): 
-            def __new__(cls, text, origin, bytes, match, event, args): 
+            def __new__(cls, text, origin, bytes, match, args):
                 s = str.__new__(cls, text)
                 s.sender = decode(origin.sender)
                 s.nick = decode(origin.nick)
-                s.event = event
                 s.bytes = bytes
-                s.match = match
                 s.group = match.group
                 s.groups = match.groups
                 s.args = args
-                s.admin = s.nick in self.config.admins
                 s.owner = s.nick == self.config.owner
-                s.chans = self.config.channels
+                s.admin = (s.nick in self.config.admins) or s.owner
                 return s
 
-        return CommandInput(text, origin, bytes, match, event, args)
+        return CommandInput(text, origin, bytes, match, args)
 
     def call(self, func, origin, phenny, input): 
         try:
@@ -256,27 +250,31 @@ class Phenny(irc.Bot):
 
         for priority in ('high', 'medium', 'low'): 
             items = list(self.commands[priority].items())
+
             for regexp, funcs in items: 
                 for func in funcs: 
                     if event != func.event and func.event != '*': continue
 
-                    match = regexp.match(text)
-                    if match: 
-                        if self.limit(origin, func): continue
+                    match = regexp.fullmatch(text)
+                    if not match: continue
 
-                        phenny = self.wrapped(origin, text, match)
-                        input = self.input(origin, text, bytes, match, event, args)
+                    if self.limit(origin, func): continue
 
-                        if func.thread: 
-                            targs = (func, origin, phenny, input)
-                            t = threading.Thread(target=self.call, args=targs, name=func.name)
-                            t.start()
-                        else: self.call(func, origin, phenny, input)
+                    phenny = self.wrapped(origin, text, match)
+                    input = self.input(origin, text, bytes, match, args)
 
-                        for source in [decode(origin.sender), decode(origin.nick)]: 
-                            try: self.stats[(func.name, source)] += 1
-                            except KeyError: 
-                                self.stats[(func.name, source)] = 1
+                    if func.thread:
+                        targs = (func, origin, phenny, input)
+                        t = threading.Thread(target=self.call, args=targs, name=func.name)
+                        t.start()
+                    else:
+                        self.call(func, origin, phenny, input)
+
+                    for source in [decode(origin.sender), decode(origin.nick)]:
+                        try:
+                            self.stats[(func.name, source)] += 1
+                        except KeyError:
+                            self.stats[(func.name, source)] = 1
 
 if __name__ == '__main__': 
     print(__doc__)

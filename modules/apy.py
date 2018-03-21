@@ -165,7 +165,7 @@ apertium_listpairs.priority = 'low'
 
 def apertium_analyse(phenny, input):
     '''Analyse text using Apertium APy'''
-    cmd = strict_check(r'(' + langRE + r')\s+(.*)', input.group(2), apertium_analyse)
+    cmd = strict_check(r'(' + langRE + r')\s+(.*)', input.group(1), apertium_analyse)
 
     opener = urllib.request.build_opener()
     opener.addheaders = headers
@@ -309,7 +309,7 @@ apertium_stats.priority = 'low'
 
 def apertium_calccoverage(phenny, input):
     '''Calculate translation coverage for a language and a given input.'''
-    cmd = strict_check(r'(' + langRE + r')\s+(.*)', input.group(2), apertium_calccoverage)
+    cmd = strict_check(r'(' + langRE + r')\s+(.*)', input.group(1), apertium_calccoverage)
 
     opener = urllib.request.build_opener()
     opener.addheaders = headers
