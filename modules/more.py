@@ -27,7 +27,7 @@ def add_messages(phenny, target, messages, tag=None):
     if not type(messages) is list:
         messages = [messages]
 
-    if not target in phenny.config.channels:
+    if not target.startswith('#'):
         messages = list(map(lambda message: target + ': ' + message, messages))
 
     messages = sum(map(lambda message: break_up(message), messages), [])
@@ -38,19 +38,21 @@ def add_messages(phenny, target, messages, tag=None):
     if len(messages) <= 2:
         for message in messages:
             phenny.msg(target, message)
-    else:
-        phenny.msg(target, messages.pop(0))
-        phenny.msg(target, 'Please type ".more" to view remaining messages.')
 
-        target = target.casefold()
+        return
 
-        with DatabaseCursor(phenny.more_db) as cursor:
-            values = [(target, message, tag) for message in messages]
-            cursor.executemany("INSERT INTO more (target, message, tag) VALUES (?, ?, ?)", values)
+    phenny.msg(target, messages.pop(0))
+    phenny.msg(target, 'Please type ".more" to view remaining messages.')
+
+    target = target.casefold()
+
+    with DatabaseCursor(phenny.more_db) as cursor:
+        values = [(target, message, tag) for message in messages]
+        cursor.executemany("INSERT INTO more (target, message, tag) VALUES (?, ?, ?)", values)
 
 def joinAlert(phenny, input):
-    if has_more(phenny, input.nick):
-        phenny.say(input.nick + ': You have queued messages. Type ".more", and I\'ll read them out.')
+    if count_more(phenny, input.nick):
+        phenny.reply('You have queued messages. Type ".more", and I\'ll read them out.')
 joinAlert.event = 'JOIN'
 joinAlert.rule = r'.*'
 
@@ -62,17 +64,17 @@ def more(phenny, input):
     count = int(input.group(1)) if input.group(1) else 1
     tag = input.group(2)
 
-    if has_more(phenny, input.nick, tag):
-        show_more(phenny, input.sender, input.nick, count, tag)
-    elif (input.admin or input.owner) and has_more(phenny, input.sender, tag):
-        show_more(phenny, input.sender, input.sender, count, tag)
+    if count_more(phenny, input.nick, tag):
+        show_more(phenny, input.nick, count, tag)
+    elif (input.admin or input.owner) and count_more(phenny, input.sender, tag):
+        show_more(phenny, input.sender, count, tag)
     else:
         phenny.reply("No more queued messages")
 
 more.name = 'more'
 more.rule = r'[.]more(?: ([1-9][0-9]*))?(?: (\S+))?'
 
-def has_more(phenny, target, tag=None):
+def count_more(phenny, target, tag=None):
     target = target.casefold()
 
     with DatabaseCursor(phenny.more_db) as cursor:
@@ -81,47 +83,46 @@ def has_more(phenny, target, tag=None):
         else:
             cursor.execute("SELECT COUNT(*) FROM more WHERE target=?", (target,))
 
-        return cursor.fetchone()[0] > 0
+        return cursor.fetchone()[0]
 
-def show_more(phenny, sender, target, count, tag=None):
+def get_more(phenny, target, count, tag=None):
     target = target.casefold()
 
     with DatabaseCursor(phenny.more_db) as cursor:
         if tag:
-            cursor.execute("SELECT id, message FROM more WHERE target=? AND tag=? ORDER BY id ASC LIMIT ?", (target, tag, count))
+            cursor.execute("SELECT id, message, tag FROM more WHERE target=? AND tag=? ORDER BY id ASC LIMIT ?", (target, tag, count))
         else:
-            cursor.execute("SELECT id, message FROM more WHERE target=? ORDER BY id ASC LIMIT ?", (target, count))
+            cursor.execute("SELECT id, message, tag FROM more WHERE target=? ORDER BY id ASC LIMIT ?", (target, count))
 
         rows = cursor.fetchall()
 
         cursor.executemany("DELETE FROM more WHERE id=?", [(row[0],) for row in rows])
 
-        if tag:
-            cursor.execute("SELECT COUNT(*) FROM more WHERE target=? AND tag=?", (target, tag))
-        else:
-            cursor.execute("SELECT COUNT(*) FROM more WHERE target=?", (target,))
+    return [row[1:3] for row in rows]
 
-        remaining = cursor.fetchone()[0]
+def show_more(phenny, target, count, tag=None):
+    rows = get_more(phenny, target, count, tag)
+    remaining = count_more(phenny, target, tag)
 
-    messages = [row[1] for row in rows]
+    messages = [row[0] for row in rows]
 
     if len(messages) > 1:
         for message in messages:
-            phenny.msg(sender, message)
+            phenny.say(message)
 
         if remaining > 0:
-            phenny.msg(sender, str(remaining) + " message(s) remaining")
+            phenny.say(str(remaining) + " message(s) remaining")
     else:
         message = messages[0]
 
         if remaining > 0:
             if len(message + " (" + str(remaining) + " remaining)") > max_message_length:
-                phenny.msg(sender, message)
-                phenny.msg(sender, str(remaining) + " message(s) remaining")
+                phenny.say(message)
+                phenny.say(str(remaining) + " message(s) remaining")
             else:
-                phenny.msg(sender, message + " (" + str(remaining) + " remaining)")
+                phenny.say(message + " (" + str(remaining) + " remaining)")
         else:
-            phenny.msg(sender, message)
+            phenny.say(message)
 
 def delete_all(phenny, target=None):
 

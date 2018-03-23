@@ -6,6 +6,19 @@ import unittest
 from mock import MagicMock, call
 from modules import more
 
+def assert_call(mock, *args):
+    mock.assert_called_once_with(*args)
+    mock.reset_mock()
+
+def assert_calls(mock, *args):
+    mock.assert_has_calls(*args)
+    mock.reset_mock()
+
+def formatting(message, target):
+    if not target.startswith('#'):
+        message = target + ": " + message
+    return message
+
 class TestMore(unittest.TestCase):
 
     def setUp(self):
@@ -17,9 +30,6 @@ class TestMore(unittest.TestCase):
         self.input = MagicMock()
         self.input.sender = '#test'
         self.input.nick = 'Testsworth'
-        self.input.group = lambda x: [None, None, None][x]
-        self.input.admin = False
-        self.input.owner = False
 
         more.setup(self.phenny)
         more.delete_all(self.phenny, target=self.input.nick)
@@ -34,153 +44,150 @@ class TestMore(unittest.TestCase):
             'Stet clita kasd gubergren',
         ]
 
-    def create_messages(self, target, num):
-        # TODO: test tagging system
-        more.add_messages(self.phenny, target, self.messages[:num+1], tag='test')
+    def create_messages(self, target, num, tag='test'):
+        more.add_messages(self.phenny, target, self.messages[:num], tag=tag)
+
+    def fetch(self, admin, owner, count, tag):
+        self.input.admin = admin
+        self.input.owner = owner
+        self.input.group = lambda x: [None, count, tag][x]
+        more.more(self.phenny, self.input)
+
+    def assert_msg(self, target, index, remaining):
+        message = formatting(self.messages[index], target)
+        if remaining:
+            message += " (%s remaining)" % remaining
+        assert_call(self.phenny.say, message)
+
+    def assert_msgs(self, target, start, end, remaining):
+        calls = [call(formatting(message, target)) for message in self.messages[start:end]]
+        if remaining:
+            calls.append(call(str(remaining) + " message(s) remaining"))
+        assert_calls(self.phenny.say, calls)
 
     def test_more_user_user(self):
-        self.create_messages(self.input.nick, 2)
-        more.more(self.phenny, self.input)
-        more.more(self.phenny, self.input)
-        self.phenny.msg.assert_called_with(self.input.sender, self.input.nick + ": " + self.messages[2])
+        self.create_messages(self.input.nick, 3)
+
+        self.fetch(False, False, None, None)
+        self.assert_msg(self.input.nick, 1, 1)
+
+        self.fetch(False, False, None, None)
+        self.assert_msg(self.input.nick, 2, 0)
 
     def test_more_user_user_one(self):
-        self.create_messages(self.input.nick, 2)
-        more.more(self.phenny, self.input)
-        self.input.group = lambda x: [None, '1', None][x]
-        more.more(self.phenny, self.input)
-        self.phenny.msg.assert_called_with(self.input.sender, self.input.nick + ": " + self.messages[2])
+        self.create_messages(self.input.nick, 3)
+
+        self.fetch(False, False, None, None)
+        self.assert_msg(self.input.nick, 1, 1)
+
+        self.fetch(False, False, 1, None)
+        self.assert_msg(self.input.nick, 2, 0)
 
     def test_more_user_user_three(self):
-        self.create_messages(self.input.nick, 3)
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
+        self.create_messages(self.input.nick, 4)
 
-        calls = [call(self.input.sender, self.input.nick + ": " + message) for message in self.messages[1:4]]
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(False, False, 3, None)
+        self.assert_msgs(self.input.nick, 1, 4, 0)
 
     def test_more_user_user_three_two(self):
-        self.create_messages(self.input.nick, 5)
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
+        self.create_messages(self.input.nick, 6)
 
-        calls = [call(self.input.sender, self.input.nick + ": " + message) for message in self.messages[1:4]]
-        calls.append(call(self.input.sender, "2 message(s) remaining"))
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(False, False, 3, None)
+        self.assert_msgs(self.input.nick, 1, 4, 0)
 
     def test_more_user_user_none(self):
-        more.more(self.phenny, self.input)
-        self.phenny.reply.assert_called_once_with("No more queued messages")
+        self.fetch(False, False, None, None)
+        assert_call(self.phenny.reply, "No more queued messages")
 
     def test_more_user_channel(self):
-        self.create_messages(self.input.sender, 2)
-        more.more(self.phenny, self.input)
-        self.phenny.reply.assert_called_once_with("No more queued messages")
+        self.create_messages(self.input.sender, 3)
+
+        self.fetch(False, False, None, None)
+        assert_call(self.phenny.reply, "No more queued messages")
 
     def test_more_admin_user(self):
-        self.input.admin = True
-        self.create_messages(self.input.nick, 2)
-        more.more(self.phenny, self.input)
-        more.more(self.phenny, self.input)
-        self.phenny.msg.assert_called_with(self.input.sender, self.input.nick + ": " + self.messages[2])
+        self.create_messages(self.input.nick, 3)
+
+        self.fetch(True, False, None, None)
+        self.assert_msg(self.input.nick, 1, 1)
+
+        self.fetch(True, False, None, None)
+        self.assert_msg(self.input.nick, 2, 0)
 
     def test_more_admin_user_one(self):
-        self.input.admin = True
-        self.create_messages(self.input.nick, 2)
-        more.more(self.phenny, self.input)
-        self.input.group = lambda x: [None, '1', None][x]
-        more.more(self.phenny, self.input)
-        self.phenny.msg.assert_called_with(self.input.sender, self.input.nick + ": " + self.messages[2])
+        self.create_messages(self.input.nick, 3)
+
+        self.fetch(True, False, None, None)
+        self.assert_msg(self.input.nick, 1, 1)
+
+        self.fetch(True, False, 1, None)
+        self.assert_msg(self.input.nick, 2, 0)
 
     def test_more_admin_user_three(self):
-        self.input.admin = True
-        self.create_messages(self.input.nick, 3)
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
+        self.create_messages(self.input.nick, 4)
 
-        calls = [call(self.input.sender, self.input.nick + ": " + message) for message in self.messages[1:4]]
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.nick, 1, 4, 0)
 
     def test_more_admin_user_three_two(self):
-        self.input.admin = True
-        self.create_messages(self.input.nick, 5)
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
+        self.create_messages(self.input.nick, 6)
 
-        calls = [call(self.input.sender, self.input.nick + ": " + message) for message in self.messages[1:4]]
-        calls.append(call(self.input.sender, "2 message(s) remaining"))
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.nick, 1, 4, 2)
 
     def test_more_admin_channel(self):
-        self.input.admin = True
-        self.create_messages(self.input.sender, 2)
-        more.more(self.phenny, self.input)
-        more.more(self.phenny, self.input)
-        self.phenny.msg.assert_called_with(self.input.sender, self.messages[2])
+        self.create_messages(self.input.sender, 3)
+
+        self.fetch(True, False, None, None)
+        self.assert_msg(self.input.sender, 1, 1)
+
+        self.fetch(True, False, None, None)
+        self.assert_msg(self.input.sender, 2, 0)
 
     def test_more_admin_channel_one(self):
-        self.input.admin = True
-        self.create_messages(self.input.sender, 2)
-        more.more(self.phenny, self.input)
-        self.input.group = lambda x: [None, '1', None][x]
-        more.more(self.phenny, self.input)
-        self.phenny.msg.assert_called_with(self.input.sender, self.messages[2])
+        self.create_messages(self.input.sender, 3)
+
+        self.fetch(True, False, None, None)
+        self.assert_msg(self.input.sender, 1, 1)
+
+        self.fetch(True, False, 1, None)
+        self.assert_msg(self.input.sender, 2, 0)
 
     def test_more_admin_channel_three(self):
-        self.input.admin = True
-        self.create_messages(self.input.sender, 3)
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
+        self.create_messages(self.input.sender, 4)
 
-        calls = [call(self.input.sender, message) for message in self.messages[1:4]]
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.sender, 1, 4, 0)
 
     def test_more_admin_channel_three_two(self):
-        self.input.admin = True
-        self.create_messages(self.input.sender, 5)
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
+        self.create_messages(self.input.sender, 6)
 
-        calls = [call(self.input.sender, message) for message in self.messages[1:4]]
-        calls.append(call(self.input.sender, "2 message(s) remaining"))
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.sender, 1, 4, 2)
 
     def test_more_admin_both_three(self):
-        self.input.admin = True
-        self.create_messages(self.input.nick, 3)
-        self.create_messages(self.input.sender, 3)
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
-        more.more(self.phenny, self.input)
+        self.create_messages(self.input.nick, 4)
+        self.create_messages(self.input.sender, 4)
 
-        more.more(self.phenny, self.input)
-        calls = [call(self.input.sender, self.input.nick + ": " + message) for message in self.messages[1:4]]
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.nick, 1, 4, 0)
 
-        more.more(self.phenny, self.input)
-        calls = [call(self.input.sender, message) for message in self.messages[1:4]]
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.sender, 1, 4, 0)
 
     def test_more_admin_both_three_two(self):
-        self.input.admin = True
-        self.create_messages(self.input.nick, 5)
-        self.create_messages(self.input.sender, 5)
+        self.create_messages(self.input.nick, 6)
+        self.create_messages(self.input.sender, 6)
 
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
-        calls = [call(self.input.sender, self.input.nick + ": " + message) for message in self.messages[1:4]]
-        calls.append(call(self.input.sender, "2 message(s) remaining"))
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.nick, 1, 4, 2)
 
-        self.input.group = lambda x: [None, '2', None][x]
-        more.more(self.phenny, self.input)
+        self.fetch(True, False, 2, None)
+        self.assert_msgs(self.input.nick, 4, 6, 0)
 
-        self.input.group = lambda x: [None, '3', None][x]
-        more.more(self.phenny, self.input)
-        calls = [call(self.input.sender, message) for message in self.messages[1:4]]
-        calls.append(call(self.input.sender, "2 message(s) remaining"))
-        self.phenny.msg.assert_has_calls(calls)
+        self.fetch(True, False, 3, None)
+        self.assert_msgs(self.input.sender, 1, 4, 2)
 
     def test_more_admin_both_none(self):
-        more.more(self.phenny, self.input)
-        self.phenny.reply.assert_called_once_with("No more queued messages")
+        self.fetch(False, False, None, None)
+        assert_call(self.phenny.reply, "No more queued messages")
