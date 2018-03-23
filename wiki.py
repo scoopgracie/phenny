@@ -64,7 +64,13 @@ def extract_snippet(url, origsection=None):
         if text is None:
             text = article.find('./div/p')
 
-    sentences = [x.strip() for x in text.text_content().split(".")]
+    breaks = [
+        '[.!?](?:[ \n]|$)',
+        '。', '｡', '．', '！', '？',
+    ]
+    regexp = '(%s)+' % '|'.join(breaks)
+
+    sentences = [x.strip() for x in re.split(regexp, text.text_content())]
     return (sentences[0], url)
 
 class Wiki(object):
