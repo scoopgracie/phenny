@@ -58,11 +58,20 @@ def extract_snippet(url, origsection=None):
         # div tag may come before the text
         while text.tag not in content_tags:
             text = text.getnext()
+
+        content = text.text_content()
     else:
         text = article.find('./p')
 
         if text is None:
             text = article.find('./div/p')
+
+        content = text.text_content()
+
+        # empty p tag may come before the text
+        while not content.strip():
+            text = text.getnext()
+            content = text.text_content()
 
     breaks = [
         '[.!?](?:[ \n]|$)',
@@ -70,20 +79,24 @@ def extract_snippet(url, origsection=None):
     ]
     regexp = '(%s)+' % '|'.join(breaks)
 
-    sentences = [x.strip() for x in re.split(regexp, text.text_content())]
+    sentences = [x.strip() for x in re.split(regexp, content)]
     return (sentences[0], url)
 
 class Wiki(object):
 
-    def __init__(self, api, url, searchurl=""):
-        self.api = api
-        self.url = url
-        self.searchurl = searchurl
+    def __init__(self, endpoints, lang):
+        if lang:
+            self.endpoints = {}
+
+            for key in endpoints:
+                self.endpoints[key] = endpoints[key] % lang
+        else:
+            self.endpoints = endpoints
 
     def search(self, term):
         term = deformat_term(term)
         term = quote(term)
-        url = self.api.format(term)
+        url = self.endpoints['api'].format(term)
 
         try:
             result = json.loads(web.get(url))
@@ -101,4 +114,4 @@ class Wiki(object):
         term = result[0]['title']
         term = format_term(term)
         term = quote(term)
-        return self.url.format(term)
+        return self.endpoints['url'].format(term)

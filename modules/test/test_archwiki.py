@@ -48,7 +48,7 @@ class TestArchwiki(unittest.TestCase):
         self.check_snippet(out)
 
     @catch_timeout
-    def test_wik_fragment(self):
+    def test_awik_fragment(self):
         self.term = "KVM"
         self.section = "Kernel support"
         self.prepare()

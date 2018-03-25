@@ -13,12 +13,13 @@ author: mutantmonkey <mutantmonkey@mutantmonkey.in>
 from tools import truncate
 import wiki
 
-wikiapi = 'https://vtluug.org/w/api.php?action=query&list=search&srsearch={0}&limit=1&prop=snippet&format=json'
-wikiuri = 'https://vtluug.org/wiki/{0}'
-wikisearch = 'https://vtluug.org/wiki/Special:Search?' \
-                          + 'search={0}&fulltext=Search'
+endpoints = {
+    'api': 'https://vtluug.org/w/api.php?action=query&list=search&srsearch={0}&limit=1&prop=snippet&format=json',
+    'url': 'https://vtluug.org/wiki/{0}',
+    'search': 'https://vtluug.org/wiki/Special:Search?search={0}&fulltext=Search',
+}
 
-def vtluug(phenny, input): 
+def vtluug(phenny, input):
     """.vtluug <term> - Look up something on the VTLUUG wiki."""
 
     origterm = input.group(1)
@@ -28,7 +29,7 @@ def vtluug(phenny, input):
 
     term, section = wiki.parse_term(origterm)
 
-    w = wiki.Wiki(wikiapi, wikiuri, wikisearch)
+    w = wiki.Wiki(endpoints, None)
     url = w.search(term)
 
     if not url:

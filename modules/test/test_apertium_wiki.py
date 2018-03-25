@@ -1,15 +1,11 @@
-"""
-test_wikipedia.py - tests for the wikipedia module
-author: mutantmonkey <mutantmonkey@mutantmonkey.in>
-"""
 import unittest
 from mock import MagicMock
-from modules import wikipedia
+from modules import apertium_wiki
 from web import catch_timeout
 import wiki
 
 
-class TestWikipedia(unittest.TestCase):
+class TestApertiumWiki(unittest.TestCase):
 
     def setUp(self):
         self.phenny = MagicMock()
@@ -27,8 +23,8 @@ class TestWikipedia(unittest.TestCase):
             self.text = self.term
             url_text = wiki.format_term(self.term)
 
-        self.input.group = lambda x: [None, None, None, self.text][x]
-        self.url = 'https://en.wikipedia.org/wiki/%s' % url_text
+        self.input.group = lambda x: [None, None, self.text][x]
+        self.url = 'http://wiki.apertium.org/wiki/%s' % url_text
 
     def check_snippet(self, output):
         self.assertIn(self.url, output)
@@ -37,47 +33,47 @@ class TestWikipedia(unittest.TestCase):
             self.assertIn(keyword, output)
 
     @catch_timeout
-    def test_wik(self):
-        self.term = "Human back"
+    def test_awik(self):
+        self.term = "Apertium Turkic"
         self.prepare()
 
-        wikipedia.wik(self.phenny, self.input)
+        apertium_wiki.awik(self.phenny, self.input)
         out = self.phenny.say.call_args[0][0]
 
-        self.keywords = ['human', 'back', 'body', 'buttocks', 'neck']
+        self.keywords = ['Apertium', 'Turkic', 'working', 'group']
         self.check_snippet(out)
 
     @catch_timeout
-    def test_wik_fragment(self):
-        self.term = "New York City"
-        self.section = "Climate"
+    def test_awik_fragment(self):
+        self.term = "Apertium Turkic"
+        self.section = "Translation pairs"
         self.prepare()
 
-        wikipedia.wik(self.phenny, self.input)
+        apertium_wiki.awik(self.phenny, self.input)
         out = self.phenny.say.call_args[0][0]
 
-        self.keywords = ['New York', 'climate', 'humid', 'subtropical']
+        self.keywords = ['work', 'systems', 'Turkic', 'languages']
         self.check_snippet(out)
 
     @catch_timeout
-    def test_wik_invalid(self):
-        self.term = "New York City"
-        self.section = "Physics"
+    def test_awik_invalid(self):
+        self.term = "Apertium Turkic"
+        self.section = "Doner"
         self.prepare()
 
-        wikipedia.wik(self.phenny, self.input)
+        apertium_wiki.awik(self.phenny, self.input)
         out = self.phenny.say.call_args[0][0]
 
         message = "No '%s' section found." % self.section
         self.assertEqual(out, '"%s" - %s' % (message, self.url))
 
     @catch_timeout
-    def test_wik_none(self):
+    def test_awik_none(self):
         self.term = "Ajgoajh"
         self.prepare()
 
-        wikipedia.wik(self.phenny, self.input)
+        apertium_wiki.awik(self.phenny, self.input)
         out = self.phenny.say.call_args[0][0]
 
-        expected = "Can't find anything in Wikipedia for \"%s\"."
+        expected = "Can't find anything in the Apertium Wiki for \"%s\"."
         self.assertEqual(out, expected % self.text)

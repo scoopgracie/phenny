@@ -12,9 +12,11 @@ import re
 from tools import truncate
 import wiki
 
-wikiapi = 'https://%s.wikipedia.org/w/api.php?format=json&action=query&list=search&srsearch={0}&prop=snippet&limit=1'
-wikiuri = 'https://%s.wikipedia.org/wiki/{0}'
-wikisearch = 'https://%s.wikipedia.org/wiki/Special:Search?search={0}&fulltext=Search'
+endpoints = {
+    'api': 'https://%s.wikipedia.org/w/api.php?format=json&action=query&list=search&srsearch={0}&prop=snippet&limit=1',
+    'url': 'https://%s.wikipedia.org/wiki/{0}',
+    'search': 'https://%s.wikipedia.org/wiki/Special:Search?search={0}&fulltext=Search',
+}
 
 langs = ['ar', 'bg', 'ca', 'cs', 'da', 'de', 'en', 'es', 'eo', 'eu', 'fa', 'fr', 'ko', 'hi', 'hr', 'id', 'it', 'he', 'lt', 'hu', 'ms', 'nl', 'ja', 'no', 'pl', 'pt', 'kk', 'ro', 'ru', 'sk', 'sl', 'sr', 'fi', 'sv', 'tr', 'uk', 'vi', 'vo', 'war', 'zh']
 
@@ -28,7 +30,7 @@ def wikipedia(phenny, origterm, lang, to_user=None):
 
     term, section = wiki.parse_term(origterm)
 
-    w = wiki.Wiki(wikiapi % lang, wikiuri % lang, wikisearch % lang)
+    w = wiki.Wiki(endpoints, lang)
     url = w.search(term)
 
     if not url:

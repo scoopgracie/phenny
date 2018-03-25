@@ -4,40 +4,27 @@ apertium_wiki.py - Phenny Wikipedia Module
 """
 
 import re
-import json
-from urllib.parse import quote
 
 from tools import truncate
-import web
 import wiki
 
-wikiuri = 'http://wiki.apertium.org/wiki/{:s}'
-wikisearchuri = 'http://wiki.apertium.org/api.php?action=query&list=search&srlimit=1&format=json&srsearch={:s}&srwhat={:s}'
-LOGS_URL = "http://tinodidriksen.com/pisg/freenode/logs/"
-
+endpoints = {
+    'api': 'http://wiki.apertium.org/api.php?action=query&list=search&srlimit=1&format=json&srsearch={0}',
+    'url': 'http://wiki.apertium.org/wiki/{0}',
+    'log': 'http://tinodidriksen.com/pisg/freenode/logs/',
+}
 
 def apertium_wiki(phenny, origterm, to_nick=None):
-    term = wiki.format_term(origterm)
-    term = quote(term)
+    term, section = wiki.parse_term(origterm)
 
-    try:
-        url = wikiuri.format(term)
-        web.get(url)
-    except:
-        for srwhat in ['title', 'text']:
-            response = json.loads(web.get(wikisearchuri.format(term, srwhat)))
+    w = wiki.Wiki(endpoints, None)
+    url = w.search(term)
 
-            if len(response['query']['search']):
-                term = response['query']['search'][0]['title']
-                term = wiki.format_term(term)
-                term = quote(term)
-                url = wikiuri.format(term)
-                break
-        else:
-            phenny.reply("No wiki results for that term.")
-            return
+    if not url:
+        phenny.say('Can\'t find anything in the Apertium Wiki for "{0}".'.format(term))
+        return
 
-    snippet, url = wiki.extract_snippet(url, None)
+    snippet, url = wiki.extract_snippet(url, section)
 
     if to_nick:
         phenny.say(truncate(snippet, to_nick + ', "%s" - ' + url))
@@ -48,7 +35,7 @@ def apertium_wiki(phenny, origterm, to_nick=None):
 def awik(phenny, input):
     """Search for something on Apertium wiki or
     point another user to a page on Apertium wiki (supports pointing)"""
-    origterm = input.groups()[1]
+    origterm = input.group(2)
 
     if "->" in origterm or "→" in origterm:
         return
@@ -93,7 +80,7 @@ awik3.example = '.awik Linguistics -> svineet'
 def logs(phenny, input):
     """ Shows logs URL """
 
-    phenny.say("Logs at %s" % LOGS_URL)
+    phenny.say("Logs at %s" % endpoints['log'])
 
 logs.commands = ['logs', 'log']
 logs.priority = 'low'

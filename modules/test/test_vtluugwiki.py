@@ -69,8 +69,7 @@ class TestVtluugwiki(unittest.TestCase):
         out = self.phenny.say.call_args[0][0]
 
         message = "No '%s' section found." % self.section
-        expected = '"%s" - https://vtluug.org/wiki/%s'
-        self.assertEqual(out, expected % (message, self.text))
+        self.assertEqual(out, '"%s" - %s' % (message, self.url))
 
     @catch_timeout
     def test_vtluug_none(self):

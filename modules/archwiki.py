@@ -13,12 +13,15 @@ author: mutantmonkey <mutantmonkey@mutantmonkey.in>
 from tools import truncate
 import wiki
 
-wikiapi = 'https://wiki.archlinux.org/api.php?action=query&list=search&srsearch={0}&limit=1&format=json'
-wikiuri = 'https://wiki.archlinux.org/index.php/{0}'
-wikisearch = 'https://wiki.archlinux.org/index.php/Special:Search?' \
-                          + 'search={0}&fulltext=Search'
+endpoints = {
+    'api': 'https://wiki.archlinux.org/api.php?action=query&list=search&srsearch={0}&limit=1&format=json',
+    'url': 'https://wiki.archlinux.org/index.php/{0}',
+    'search': 'https://wiki.archlinux.org/index.php/Special:Search?search={0}&fulltext=Search',
+}
 
-def awik(phenny, input): 
+def awik(phenny, input):
+    """.awik <term> - Look up something on the ArchWiki."""
+
     origterm = input.group(1)
 
     if not origterm:
@@ -26,7 +29,7 @@ def awik(phenny, input):
 
     term, section = wiki.parse_term(origterm)
 
-    w = wiki.Wiki(wikiapi, wikiuri, wikisearch)
+    w = wiki.Wiki(endpoints, None)
     url = w.search(term)
 
     if not url:
