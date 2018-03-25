@@ -31,18 +31,18 @@ def wikipedia(phenny, origterm, lang, to_user=None):
     term, section = wiki.parse_term(origterm)
 
     w = wiki.Wiki(endpoints, lang)
-    url = w.search(term)
+    match = w.search(term)
 
-    if not url:
+    if not match:
         phenny.say('Can\'t find anything in Wikipedia for "{0}".'.format(origterm))
         return
 
-    snippet, url = wiki.extract_snippet(url, section)
+    snippet, url = wiki.extract_snippet(match, section)
 
     if to_user:
-        phenny.say(truncate(snippet, to_user + ', "%s" - ' + url))
+        phenny.say(truncate(snippet, to_user + ', "{}" - ' + url))
     else:
-        phenny.say(truncate(snippet, '"%s" - ' + url))
+        phenny.say(truncate(snippet, '"{}" - ' + url))
 
 
 def wik(phenny, input):

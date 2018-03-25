@@ -192,7 +192,7 @@ def truncate(text, template=None, max_length=max_message_length):
         text = text.decode('utf-8', 'ignore') + '...'
 
     if template:
-        return template % text
+        return template.format(text)
     else:
         return text
 

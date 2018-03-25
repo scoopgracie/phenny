@@ -2,7 +2,7 @@ import html
 import json
 import lxml.html
 import re
-from requests.exceptions import ContentDecodingError
+from requests.exceptions import ContentDecodingError, HTTPError
 from urllib.parse import quote, unquote
 
 from tools import truncate
@@ -10,8 +10,16 @@ import web
 from web import ServerFault
 
 
-r_tag = re.compile(r'<(?!!)[^>]+>')
-r_whitespace = re.compile(r'[\t\r\n ]+')
+abbrs = [
+    'etc', 'ca', 'cf', 'Co', 'Ltd', 'Inc', 'Mt', 'Mr', 'Mrs',
+    'Dr', 'Ms', 'Rev', 'Fr', 'St', 'Sgt', 'pron', 'approx', 'lit',
+    'syn', 'transl', 'sess', 'fl', 'Op', 'Dec', 'Brig', 'Gen',
+] + list('ABCDEFGHIJKLMNOPQRSTUVWXYZ') + list('abcdefghijklmnopqrstuvwxyz')
+no_abbr = ''.join('(?<! ' + abbr + ')' for abbr in abbrs)
+breaks = re.compile('(%s)+' % '|'.join([
+    no_abbr + '[.!?](?:[ \n]|\[[0-9]+\]|$)',
+    '。', '｡', '．', '！', '？',
+]))
 
 
 def format_term(term):
@@ -40,8 +48,40 @@ def parse_term(origterm):
 
     return (term, section)
 
-def extract_snippet(url, origsection=None):
-    page = lxml.html.fromstring(web.get(url))
+def good_content(text, content):
+    if text.tag not in ['p', 'ul', 'ol']:
+        return False
+
+    if not content.strip():
+        return False
+
+    if not breaks.search(content):
+        return False
+
+    if text.find(".//span[@id='coordinates']") is not None:
+        return False
+
+    return True
+
+def search_content(text):
+    if text is None:
+        return None
+
+    content = text.text_content()
+
+    while not good_content(text, content):
+        text = text.getnext()
+
+        if text is None:
+            return None
+
+        content = text.text_content()
+
+    return content
+
+def extract_snippet(match, origsection=None):
+    html, url = match
+    page = lxml.html.fromstring(html)
     article = page.get_element_by_id('mw-content-text')
 
     if origsection:
@@ -53,33 +93,22 @@ def extract_snippet(url, origsection=None):
             return ("No '%s' section found." % origsection, url)
 
         text = text.getparent().getnext()
-        content_tags = ['p', 'ul', 'ol']
+        content = search_content(text)
 
-        # div tag may come before the text
-        while text.tag not in content_tags:
-            text = text.getnext()
-
-        content = text.text_content()
+        if text is None:
+            return ("No section text found.", url)
     else:
         text = article.find('./p')
 
         if text is None:
             text = article.find('./div/p')
 
-        content = text.text_content()
+        content = search_content(text)
 
-        # empty p tag may come before the text
-        while not content.strip():
-            text = text.getnext()
-            content = text.text_content()
+        if text is None:
+            return ("No introduction text found.", url)
 
-    breaks = [
-        '[.!?](?:[ \n]|$)',
-        '。', '｡', '．', '！', '？',
-    ]
-    regexp = '(%s)+' % '|'.join(breaks)
-
-    sentences = [x.strip() for x in re.split(regexp, content)]
+    sentences = [x.strip() for x in breaks.split(content)]
     return (sentences[0], url)
 
 class Wiki(object):
@@ -94,12 +123,21 @@ class Wiki(object):
             self.endpoints = endpoints
 
     def search(self, term):
+        try:
+            exactterm = format_term(term)
+            exactterm = quote(exactterm)
+            exacturl = self.endpoints['url'].format(exactterm)
+            html = web.get(exacturl)
+            return (html, exacturl)
+        except HTTPError:
+            pass
+
         term = deformat_term(term)
         term = quote(term)
-        url = self.endpoints['api'].format(term)
+        apiurl = self.endpoints['api'].format(term)
 
         try:
-            result = json.loads(web.get(url))
+            result = json.loads(web.get(apiurl))
         except ValueError as e:
             raise ContentDecodingError(str(e))
 
@@ -114,4 +152,7 @@ class Wiki(object):
         term = result[0]['title']
         term = format_term(term)
         term = quote(term)
-        return self.endpoints['url'].format(term)
+
+        url = self.endpoints['url'].format(term)
+        html = web.get(url)
+        return (html, url)
