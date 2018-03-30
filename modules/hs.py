@@ -16,10 +16,7 @@ NS = '{http://www.dsml.org/DSML}'
 """Search the people search database using the argument as a query."""
 def search(query):
     query = web.quote(query)
-    try:
-        r = web.get(SEARCH_URL.format(query), verify=False)
-    except (web.ConnectionError, web.HTTPError) as e:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
+    r = web.get(SEARCH_URL.format(query), verify=False)
 
     # apparently the failure mode if you search for <3 characters is a blank
     # XML page...

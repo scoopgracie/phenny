@@ -16,11 +16,8 @@ def fcc(phenny, input):
         phenny.say(".fcc <callsign> - Look up a callsign issued by the FCC.")
         return
 
-    try:
-        req = web.get("http://callook.info/{0}/json".format(web.quote(callsign)))
-        data = json.loads(req)
-    except Exception as e:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
+    req = web.get("http://callook.info/{0}/json".format(web.quote(callsign)))
+    data = json.loads(req)
 
     if len(data) <= 0 or data['status'] == 'INVALID':
         phenny.reply('No results found for {0}'.format(callsign))

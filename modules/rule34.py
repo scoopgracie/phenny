@@ -16,11 +16,7 @@ def rule34(phenny, input):
         phenny.say(rule34.__doc__.strip())
         return
 
-    try:
-        req = web.get("http://rule34.xxx/index.php?page=post&s=list&tags={0}".format(web.quote(q)))
-    except Exception as e:
-        raise GrumbleError("THE INTERNET IS FUCKING BROKEN. Please try again later.") from e
-
+    req = web.get("http://rule34.xxx/index.php?page=post&s=list&tags={0}".format(web.quote(q)))
     doc = lxml.html.fromstring(req)
     doc.make_links_absolute('http://rule34.xxx/')
     thumbs = doc.find_class('thumb')
