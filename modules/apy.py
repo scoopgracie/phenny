@@ -76,7 +76,7 @@ def apertium_translate(phenny, input):
     '''Translates a phrase using APy.'''
     pairRE = langRE + r'-' + langRE
     line = strict_check(r'((?:' + pairRE + r'(?:\|' + pairRE + r')*' + r' ?)+)\s+(.*)',
-                        input.group(2), apertium_translate)
+                        input.group(1), apertium_translate)
     if (len(line.group(2)) > 350) and (not input.admin):
         raise GrumbleError('Phrase must be under 350 characters.')
 
@@ -130,7 +130,7 @@ apertium_listlangs.priority = 'low'
 
 def apertium_listpairs(phenny, input):
     '''Lists translation pairs available to apertium translation'''
-    lang = input.group(2)
+    lang = input.group(1)
 
     opener = urllib.request.build_opener()
     opener.addheaders = headers
@@ -192,7 +192,7 @@ apertium_analyse.priority = 'medium'
 
 def apertium_generate(phenny, input):
     '''Use Apertium APy's generate functionality'''
-    cmd = strict_check(r'(' + langRE + r')\s+(.*)', input.group(2), apertium_generate)
+    cmd = strict_check(r'(' + langRE + r')\s+(.*)', input.group(1), apertium_generate)
 
     opener = urllib.request.build_opener()
     opener.addheaders = headers
@@ -219,7 +219,7 @@ apertium_generate.priority = 'medium'
 
 def apertium_identlang(phenny, input):
     '''Identify the language for a given input.'''
-    text = strict_check(r'.*', input.group(2), apertium_identlang).group(0)
+    text = strict_check(r'.*', input.group(1), apertium_identlang).group(0)
 
     opener = urllib.request.build_opener()
     opener.addheaders = headers
@@ -271,7 +271,7 @@ def apertium_stats(phenny, input):
             return 'are {:d} {:s}s'.format(num, word)
         return '{:d} {:s}s'.format(num, word)
 
-    pipe = input.group(2)
+    pipe = input.group(1)
     if pipe:
         runningPipes = jdata['responseData']['runningPipes']
         useCount = jdata['responseData']['useCount']
@@ -331,7 +331,7 @@ apertium_calccoverage.priority = 'medium'
 
 def apertium_perword(phenny, input):
     '''Perform APy's tagger, morph, translate, and biltrans functions on individual words.'''
-    cmd = strict_check(r'(' + langRE + r')\s+\((.*)\)\s+(.*)', input.group(2), apertium_perword)
+    cmd = strict_check(r'(' + langRE + r')\s+\((.*)\)\s+(.*)', input.group(1), apertium_perword)
     valid_funcs = {'tagger', 'disambig', 'biltrans', 'translate', 'morph'}
 
     # validate requested functions

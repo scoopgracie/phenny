@@ -115,14 +115,11 @@ def setup(self):
     loadReminders(self)
     loadAliases(self)
 
-def f_remind(phenny, input): 
+def f_remind(phenny, input, verb):
     teller = input.nick
 
     # @@ Multiple comma-separated tellees? Cf. Terje, #swhack, 2006-04-15
-    verb, tellee, msg = input.groups()
-    verb = verb
-    tellee = tellee
-    msg = msg
+    tellee, msg = input.groups()
 
     aliases = aliasGroupFor(teller)
 
@@ -158,8 +155,16 @@ def f_remind(phenny, input):
     else: phenny.say("Hey, I'm not as stupid as Monty you know!")
 
     dumpReminders(phenny)
-f_remind.rule = ('$nick', ['tell', 'ask'], r'(\S+) (.*)')
-f_remind.thread = False
+
+def f_tell(phenny, input):
+    f_remind(phenny, input, 'tell')
+f_tell.rule = ('$nick', ['tell'], r'(\S+) (.*)')
+f_tell.thread = False
+
+def f_ask(phenny, input):
+    f_remind(phenny, input, 'ask')
+f_ask.rule = ('$nick', ['ask'], r'(\S+) (.*)')
+f_ask.thread = False
 
 def formatReminder(r, tellee, recipient=None):
     if not recipient:

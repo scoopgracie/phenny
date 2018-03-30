@@ -69,7 +69,7 @@ def wiki_response(info, lg):
 
 
 def wikicount(phenny, raw):
-	lg = raw.group(2).lower()
+	lg = raw.group(1).lower()
 	if lg == "update":
 		return
 	elif lg in phenny.wiki_data:

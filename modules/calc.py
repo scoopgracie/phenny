@@ -14,9 +14,9 @@ import sympy
 import re
 
 def c(phenny, input):
-    if not input.group(2):
+    if not input.group(1):
         return phenny.reply("Nothing to calculate.")
-    calc = input.group(2)
+    calc = input.group(1)
 
     if '=' in calc:
         calc = calc.replace(' ', '')
@@ -69,7 +69,7 @@ c.example = '.c 5 + 3'
 
 def py(phenny, input): 
    """evaluates a python2 expression via a remote sandbox"""
-   query = input.group(2).encode('utf-8')
+   query = input.group(1).encode('utf-8')
    uri = 'http://tumbolia.appspot.com/py/'
    answer = web.get(uri + web.quote(query))
    if answer: 

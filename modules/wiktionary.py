@@ -218,9 +218,9 @@ w3.example = '.w Seppuku -> svineet'
 
 def ety(phenny, input):
     """Find the etymology of a word."""
-    if not input.group(2):
+    if not input.group(1):
         return phenny.reply("Nothing to define.")
-    word = input.group(2)
+    word = input.group(1)
     ety_val = ''
     ety_val = etymology(phenny, word)
     if not ety_val or ety_val == word + ' .':

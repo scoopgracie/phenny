@@ -38,7 +38,7 @@ def get_definition(phenny, word, to_user=None):
 def urbandict(phenny, input):
     """.urb <word> - Search Urban Dictionary for a definition. (supports pointing)"""
 
-    word = input.group(2)
+    word = input.group(1)
     if not word:
         phenny.say(urbandict.__doc__.strip())
         return

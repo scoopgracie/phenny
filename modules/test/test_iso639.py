@@ -73,7 +73,7 @@ class TestISO639(unittest.TestCase):
                 iso1 + ', ' + self.iso1_to_iso3[iso1]
                 + ' = ' + self.iso_to_lang[iso1]
             )
-            self.input.group.assert_called_once_with(2)
+            self.input.group.assert_called_once_with(1)
             self.reset_mock(self.phenny, self.input)
 
     def test_conversion_iso3(self):
@@ -84,7 +84,7 @@ class TestISO639(unittest.TestCase):
                 iso3 + ', ' + self.iso3_to_iso1(iso3)
                 + ' = ' + self.iso_to_lang[iso3]
             )
-            self.input.group.assert_called_once_with(2)
+            self.input.group.assert_called_once_with(1)
             self.reset_mock(self.phenny, self.input)
 
     def test_lang_search(self):

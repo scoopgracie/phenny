@@ -7,7 +7,7 @@ author: mutantmonkey <mutantmonkey@mutantmonkey.in>
 
 def wadsworth(phenny, input):
     """.wadsworth - Apply Wadsworth's Constant to some text."""
-    text = input.group(2)
+    text = input.group(1)
     if not text:
         return phenny.say(".wadsworth <text> - apply Wadsworth's Constant")
 

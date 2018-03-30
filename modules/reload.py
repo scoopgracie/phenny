@@ -23,7 +23,7 @@ def f_reload(phenny, input):
     """Reloads a module, for use by admins only."""
     if not (input.admin or input.owner): return
 
-    name = input.group(2)
+    name = input.group(1)
 
     if (not name) or (name == '*'):
         restart(phenny)

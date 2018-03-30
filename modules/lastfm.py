@@ -71,7 +71,7 @@ lastfm_set.rule = (['lastfm-set'], r'(\S+)\s+(?:(.*?),(.*)|(\S+))')
 def now_playing(phenny, input):
     nick = input.nick.casefold()
     user = ""
-    arg = input.group(2)
+    arg = input.group(1)
     if not arg or len(arg.strip()) == 0:
         user = resolve_username(nick) # use the sender
         if not user: #nick didnt resolve

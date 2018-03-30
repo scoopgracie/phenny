@@ -22,17 +22,17 @@ def start_pester(phenny, input):
     start_pester.conn = sqlite3.connect(phenny.pester_db)
     c = start_pester.conn.cursor()
     inputnick = input.nick.casefold();
-    pesternick = input.group(2).casefold()
+    pesternick = input.group(1).casefold()
 
     c.execute('''SELECT * FROM to_pester WHERE pesteree=? AND pesterer=?''', [pesternick, inputnick])
     if c.fetchall() == []:
         current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        c.execute('''INSERT INTO to_pester VALUES(?,?,?,?,?,?);''', [pesternick, inputnick, input.group(3), current_time, "", current_time])
+        c.execute('''INSERT INTO to_pester VALUES(?,?,?,?,?,?);''', [pesternick, inputnick, input.group(2), current_time, "", current_time])
         start_pester.conn.commit()
-        msg = input.nick + ": I will start pestering " + input.group(2) + " " + input.group(3)
+        msg = input.nick + ": I will start pestering " + input.group(1) + " " + input.group(2)
         phenny.say(msg)
     else:
-        phenny.say(input.nick + ': You are already pestering ' + input.group(2))
+        phenny.say(input.nick + ': You are already pestering ' + input.group(1))
 
     start_pester.conn.commit()
     start_pester.conn.close()

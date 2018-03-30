@@ -30,7 +30,7 @@ def setup(self):
 
 def head(phenny, input):
     """Provide HTTP HEAD information."""
-    uri = input.group(2)
+    uri = input.group(1)
     uri = (uri or '')
     if ' ' in uri:
         uri, header = uri.rsplit(' ', 1)

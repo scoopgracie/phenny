@@ -25,9 +25,9 @@ def topics(phenny, input):
     if not is_up('https://api.duckduckgo.com'):
         return phenny.say('Sorry, DuckDuckGo API is down.')
 
-    if not input.group(2): 
+    if not input.group(1):
         return phenny.reply('.topics about what?')
-    query = input.group(2)
+    query = input.group(1)
 
     r = requests.get(ddg_uri + query, timeout=REQUEST_TIMEOUT).json()
     topics = r['RelatedTopics']
@@ -46,9 +46,9 @@ def topics(phenny, input):
 topics.commands = ['topics']
 
 def search(phenny, input):
-    if not input.group(2): 
+    if not input.group(1):
         return phenny.reply('.search for what?')
-    query = input.group(2)
+    query = input.group(1)
 
     if not is_up('https://api.duckduckgo.com'):
         return phenny.say('Sorry, DuckDuckGo API is down.')
@@ -71,9 +71,9 @@ search.commands = ['search']
 
 def suggest(phenny, input):
     ''' Shows first 10 results from Google Suggestion API.'''
-    if not input.group(2):
+    if not input.group(1):
         return phenny.reply("No query term.")
-    query = input.group(2)
+    query = input.group(1)
     answer = requests.get(suggest_uri + query)
     suggestions = answer.json()[1][:10]
     phenny.reply(suggestions[0])
@@ -82,10 +82,10 @@ def suggest(phenny, input):
 suggest.commands = ['suggest']
 
 def lmgtfy(phenny, input):
-    if not input.group(2):
+    if not input.group(1):
         phenny.reply('.lmgtfy what f who?')
     try:
-        (who, what) = input.group(2).split(' ', 1)
+        (who, what) = input.group(1).split(' ', 1)
         response = "%s: http://lmgtfy.com/?q=%s"
         what = web.quote(what)
         phenny.say(response % (who, what))

@@ -26,7 +26,7 @@ def follow(phenny, input):
     global follows
 
     try:
-        nick, dir, *extra = input.group(2).split(' ')
+        nick, dir, *extra = input.group(1).split(' ')
         dir = tuple(dir.split('-'))
         _ = dir[1]
     except:
@@ -79,7 +79,7 @@ def unfollow(phenny, input):
 
     global follows
 
-    target = input.group(2)
+    target = input.group(1)
 
     for i in follows:
         if not (caseless_equal(i.nick, target) and caseless_equal(i.sender, input.nick)):

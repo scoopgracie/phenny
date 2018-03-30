@@ -40,7 +40,7 @@ def flatten(s):
 def iso639(phenny, input):
     """.iso639 <lg> | .iso639 <Language> - Search ISO 639-1, -2 and -3 for a language code."""
     response = ""
-    thisCode = str(input.group(2)).lower()
+    thisCode = str(input.group(1)).lower()
     if thisCode == "None":
         thisCode = random.choice(list(phenny.iso_data.keys()))
         #ISOcodes[random.randint(0,len(ISOcodes)-1)]

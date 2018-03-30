@@ -32,7 +32,7 @@ def imdb_search(query):
 def imdb(phenny, input): 
     """.imdb <movie> - Find a link to a movie on IMDb."""
 
-    query = input.group(2)
+    query = input.group(1)
     if not query:
         return phenny.say('.imdb what?')
 

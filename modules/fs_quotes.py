@@ -15,7 +15,7 @@ from modules import more
 #def quote(phenny, input):
 #    """.quote <id> - Get a quote from quotes.firespeaker.org."""
 #
-#    word = input.group(2)
+#    word = input.group(1)
 #    if not word:
 #        phenny.say(fs_quotes.__doc__.strip())
 #        return
@@ -61,7 +61,7 @@ def information(phenny, input):
 	""".information (<topic>) get information on a topic"""
 	global topics
 
-	topic = input.group(2)
+	topic = input.group(1)
 
 	if topic.lower() in topics:
 		phenny.say(topics[topic.lower()])
@@ -113,7 +113,7 @@ def randquote_fetcher(phenny, topic, to_user):
 
 def randquote(phenny, input):
     """.randquote (<topic>) - Get a random quote from quotes.firespeaker.org (about topic). (supports pointing)"""
-    topic = input.group(2)
+    topic = input.group(1)
 
     if topic:
         if "->" in topic: return

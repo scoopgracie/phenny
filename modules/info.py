@@ -9,7 +9,7 @@ http://inamidst.com/phenny/
 
 
 def help(phenny, input):
-    command = input.group(2)
+    command = input.group(1)
 
     # work out a help URL to display
     if hasattr(phenny.config, 'helpurl'):

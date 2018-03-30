@@ -171,7 +171,7 @@ def give_time(phenny, tz, input_nick, to_user=None):
 
 def f_time(phenny, input):
     """.time [timezone] - Show current time in defined timezone. Defaults to GMT. (supports pointing)"""
-    tz = input.group(2) or 'GMT'
+    tz = input.group(1) or 'GMT'
 
     match_point_cmd = r'point\s(\S*)\s(.*)'
     matched_point = re.compile(match_point_cmd).match(tz)
@@ -438,7 +438,7 @@ def time_zone_convert(phenny, input_txt, to_user=None):
 def tz(phenny, input):
     """Usage: .tz <time><from timezone> in <destination> - Convert time to destination zone. (supports pointing)"""
 
-    input_txt = input.group(2)
+    input_txt = input.group(1)
     if not input_txt:
         phenny.reply(tz.__doc__.strip())
         return
