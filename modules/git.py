@@ -298,14 +298,17 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     except:
                         return True
 
+                out_messages = []
                 for commit in data['commits']:
-                    messages.append(truncate(commit['message'], template.format(
+                    #messages.append(truncate(commit['message'], template.format(
+                    out_messages.append(truncate(commit['message'], template.format(
                         data['repository']['name'],
                         data['pusher']['name'],
                         ', '.join(commit['modified'] + commit['added']),
                         '{}',
                         commit['url'][:commit['url'].rfind('/') + 7]
                     )))
+                messages.append(", ".join(out_messages))
 
             elif event == 'release':
                 template = '{:}: {:} * release {:} {:} {:}'
