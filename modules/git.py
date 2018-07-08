@@ -308,7 +308,8 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                         '{}',
                         commit['url'][:commit['url'].rfind('/') + 7]
                     )))
-                messages.append(", ".join(out_messages))
+                if data['pusher']['name'] != "ApertiumBot":
+                    messages.append(", ".join(out_messages))
 
             elif event == 'release':
                 template = '{:}: {:} * release {:} {:} {:}'
