@@ -225,7 +225,7 @@ f_time5.rule = r'(\S*)(:|,)\s\.(time)$'
 def scrape_wiki_time_zone_abbreviations():
     data = {}
 
-    url = 'http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations'
+    url = 'https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations'
     doc = html.document_fromstring(web.get(url, cache=True))
     table = doc.find_class('wikitable')[0]
     rows = table.findall('tr')
@@ -269,7 +269,7 @@ def scrape_wiki_time_zone_abbreviations():
 def scrape_wiki_tz_database_time_zones():
     data = {}
 
-    url = 'http://en.wikipedia.org/wiki/List_of_tz_database_time_zones'
+    url = 'https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'
     doc = html.document_fromstring(web.get(url, cache=True))
     table = doc.find_class('wikitable')[0]
     rows = table.findall('tr')

@@ -12,9 +12,9 @@ import web
 import json
 import re, urllib.request, urllib.parse, urllib.error
 
-uri = 'http://en.wiktionary.org/wiki/{0}?printable=yes'
-wikiapi = 'http://en.wiktionary.org/w/api.php?action=query&titles={0}&prop=revisions&rvprop=content&format=json'
-wikisearchapi = 'http://en.wiktionary.org/w/api.php?action=query&list=search&srlimit=1&format=json&srsearch={0}'
+uri = 'https://en.wiktionary.org/wiki/{0}?printable=yes'
+wikiapi = 'https://en.wiktionary.org/w/api.php?action=query&titles={0}&prop=revisions&rvprop=content&format=json'
+wikisearchapi = 'https://en.wiktionary.org/w/api.php?action=query&list=search&srlimit=1&format=json&srsearch={0}'
 #r_tag = re.compile(r'<[^>]+>')
 r_ul = re.compile(r'(?ims)<ul>.*?</ul>')
 r_li = re.compile(r'^# ')
