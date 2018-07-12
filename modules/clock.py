@@ -272,9 +272,9 @@ def scrape_wiki_tz_database_time_zones():
     url = 'https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'
     doc = html.document_fromstring(web.get(url, cache=True))
     table = doc.find_class('wikitable')[0]
-    rows = table.findall('tr')
+    rows = table.find('tbody').findall('tr')
 
-    column_names = [cell.text_content().replace('*', '') for cell in rows[0].findall('th')]
+    column_names = [cell.text_content().strip().replace('*', '') for cell in rows[0].findall('th')]
 
     for row in rows[1:]:
         column = 0
