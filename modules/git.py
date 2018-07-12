@@ -299,17 +299,36 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                         return True
 
                 out_messages = []
+                out_names = []
+                out_commithashes = []
+                out_commitmessages = []
+                out_files = []
                 for commit in data['commits']:
+                    out_names.append(data['pusher']['name'])
+                    out_commithashes.append(commit['url'][:commit['url'].rfind('/') + 7])
+                    out_commitmessages.append(commit['message']
+                    out_files.append(', '.join(commit['modified'] + commit['added']))
+                    out_messages.append(commit['message'])
                     #messages.append(truncate(commit['message'], template.format(
-                    out_messages.append(truncate(commit['message'], template.format(
-                        data['repository']['name'],
-                        data['pusher']['name'],
-                        ', '.join(commit['modified'] + commit['added']),
-                        '{}',
-                        commit['url'][:commit['url'].rfind('/') + 7]
-                    )))
+                    #out_messages.append(truncate(commit['message'], template.format(
+                    #    data['repository']['name'],
+                    #    data['pusher']['name'],
+                    #    ', '.join(commit['modified'] + commit['added']),
+                    #    '{}',
+                    #    commit['url'][:commit['url'].rfind('/') + 7]
+                    #)))
+                 out_message = truncate(" * ".out_messages, template.format(
+                     data['repository']['name'],
+                     ', '.join(out_names),
+                     ', '.join(out_files),
+                     '{}',
+                     "[ "+' '.out_commithashes+" ]",
+                 ))
+
+                    
                 if data['pusher']['name'] != "ApertiumBot":
-                    messages.append(", ".join(out_messages))
+                    #messages.append(", ".join(out_messages))
+                    messages.append(out_message)
 
             elif event == 'release':
                 template = '{:}: {:} * release {:} {:} {:}'
