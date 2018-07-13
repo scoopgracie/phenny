@@ -317,13 +317,13 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     #    '{}',
                     #    commit['url'][:commit['url'].rfind('/') + 7]
                     #)))
-                 out_message = truncate(" * ".out_messages, template.format(
-                     data['repository']['name'],
-                     ', '.join(out_names),
-                     ', '.join(out_files),
-                     '{}',
-                     "[ "+' '.out_commithashes+" ]",
-                 ))
+                out_message = truncate(" * ".join(out_messages), template.format(
+                    data['repository']['name'],
+                    ', '.join(out_names),
+                    ', '.join(out_files),
+                    '{}',
+                    "[ "+' '.out_commithashes+" ]"
+                ))
 
                     
                 if data['pusher']['name'] != "ApertiumBot":
