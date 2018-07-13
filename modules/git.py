@@ -287,7 +287,8 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                         template.format(repo, user, action, number, '{}', url)
                     ))
             elif event == 'push':
-                template = '{:}: {:} * {:}: {:} {:}'
+                #template = '{:}: {:} * {:}: {:} {:}'
+                template = '{:}: {:} [ {:} ] {:}: {:}'
                 ref = data['ref'].split('/')[-1]
                 repo_fullname = data['repository']['full_name']
                 fork = data['repository']['fork']
@@ -305,7 +306,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 out_files = []
                 for commit in data['commits']:
                     out_names.append(data['pusher']['name'])
-                    out_commithashes.append(commit['url'][:commit['url'].rfind('/') + 7])
+                    out_commithashes.append(commit['id'][:6])
                     out_commitmessages.append(commit['message'])
                     out_files.append(', '.join(commit['modified'] + commit['added']))
                     out_messages.append(commit['message'])
@@ -319,10 +320,11 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     #)))
                 out_message = truncate(" * ".join(out_messages), template.format(
                     data['repository']['name'],
-                    ', '.join(out_names),
-                    ', '.join(out_files),
-                    '{}',
-                    "[ "+' '.join(out_commithashes)+" ]"
+                    ', '.join(set(out_names)),
+                    #"[ "+' '.join(out_commithashes)+" ]",
+                    ' '.join(out_commithashes),
+                    ', '.join(set(out_files)),
+                    '{}'
                 ))
 
                     
