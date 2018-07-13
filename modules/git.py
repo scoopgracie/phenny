@@ -306,7 +306,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 out_files = []
                 for commit in data['commits']:
                     out_names.append(data['pusher']['name'])
-                    out_commithashes.append(commit['id'][:6])
+                    out_commithashes.append(commit['id'][:7])
                     out_commitmessages.append(commit['message'])
                     out_files.append(', '.join(commit['modified'] + commit['added']))
                     out_messages.append(commit['message'])
