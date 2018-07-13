@@ -322,7 +322,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     ', '.join(out_names),
                     ', '.join(out_files),
                     '{}',
-                    "[ "+' '.out_commithashes+" ]"
+                    "[ "+' '.join(out_commithashes)+" ]"
                 ))
 
                     
