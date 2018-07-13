@@ -8,7 +8,7 @@ import web
 
 def scrape_wiki_list():
 	data = {}
-	url = 'http://meta.wikimedia.org/wiki/List_of_Wikipedias'
+	url = 'https://meta.wikimedia.org/wiki/List_of_Wikipedias'
 	resp = web.get(url)
 	h = html.document_fromstring(resp)
 	for e in h.find_class('sortable'):
@@ -21,7 +21,7 @@ def scrape_wiki_list():
 
 def scrape_incubator_list():
 	data = {}
-	url = 'http://incubator.wikimedia.org/wiki/Template:Tests/wp'
+	url = 'https://incubator.wikimedia.org/wiki/Template:Tests/wp'
 	resp = web.get(url)
 	h = html.document_fromstring(resp)
 	for row in h.find_class('wikitable')[0].findall('tr')[2:]:
@@ -41,7 +41,7 @@ def scrape_incubator_list():
 
 def scrape_iso_3to1(d):
 	mapping = {}
-	resp = web.get('http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes')
+	resp = web.get('https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes')
 	h = html.document_fromstring(resp)
 	table = h.find_class('wikitable')[0]
 	for row in table.findall('tr')[1:]:
@@ -56,12 +56,12 @@ def scrape_iso_3to1(d):
 
 def wiki_response(info, lg):
 	if info[1] is not None:
-		url = 'http://{}.wikipedia.org/'.format(lg)
+		url = 'https://{}.wikipedia.org/'.format(lg)
 		response = 'The {} ({}) Wikipedia has {:,} articles. {}'.format(
 			info[0], lg, info[1], url)
 	else:
-		url = 'http://incubator.wikimedia.org/wiki/Wp/' + lg
-		resp = web.get('http://incubator.wikimedia.org/wiki/Template:Wp/{}/NUMBEROFARTICLES'.format(lg))
+		url = 'https://incubator.wikimedia.org/wiki/Wp/' + lg
+		resp = web.get('https://incubator.wikimedia.org/wiki/Template:Wp/{}/NUMBEROFARTICLES'.format(lg))
 		num_articles = int(html.document_fromstring(resp).get_element_by_id('mw-content-text').find('*/p/a').text.replace(',', ''))
 		response = 'The {} ({}) Wikipedia is incubated and has {:,} articles. {}'.format(
 			info[0], lg, num_articles, url)
