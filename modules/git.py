@@ -466,6 +466,23 @@ gitserver.name = "gitserver"
 gitserver.rule = ('.gitserver', '(.*)')
 
 
+def to_commit(phenny, input):
+    api = "https://api.github.com/search/commits?q=%s"
+    # currently experimental API
+    headers = { "Accept": "application/vnd.github.cloak-preview" }
+
+    sha = input.group(1)
+    json = web.get(api % sha, headers=headers)
+    data = json.loads(json)
+
+    item = data["items"][0]
+    html_url = item["html_url"]
+
+    phenny.reply(html_url)
+to_commit.name = "to_commit"
+to_commit.rule = '!commit ([0-9a-f]{7,40})'
+
+
 def get_commit_info(phenny, repo, sha):
     '''Get commit information for a given repository and commit identifier.'''
 
