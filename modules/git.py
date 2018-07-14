@@ -327,7 +327,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     '{}'
                 ))
 
-                    
+                # FIXME: implement blacklist so as not to hard-code this
                 if data['pusher']['name'] != "ApertiumBot":
                     #messages.append(", ".join(out_messages))
                     messages.append(out_message)
