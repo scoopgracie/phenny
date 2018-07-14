@@ -331,6 +331,8 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 if data['pusher']['name'] != "ApertiumBot":
                     #messages.append(", ".join(out_messages))
                     messages.append(out_message)
+                else:
+                    return True
 
             elif event == 'release':
                 template = '{:}: {:} * release {:} {:} {:}'
