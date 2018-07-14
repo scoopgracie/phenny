@@ -288,10 +288,12 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     ))
             elif event == 'push':
                 pusher_name = data['pusher']['name']
-                blacklist = ['ApertiumBot']
 
-                if pusher_name in blacklist:
-                    return True
+                try:
+                    if pusher_name in config.gitbots:
+                        return True
+                except:
+                    pass
 
                 ref = data['ref'].split('/')[-1]
                 repo_fullname = data['repository']['full_name']
