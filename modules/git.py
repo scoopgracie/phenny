@@ -312,7 +312,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 out_files = set()
 
                 for commit in data['commits']:
-                    out_commithashes.append(commit['sha'][:7])
+                    out_commithashes.append(commit['id'][:7])
                     out_files.update(commit['modified'], commit['added'])
                     out_messages.append(commit['message'])
 
