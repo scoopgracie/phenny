@@ -287,8 +287,14 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                         template.format(repo, user, action, number, '{}', url)
                     ))
             elif event == 'push':
-                #template = '{:}: {:} * {:}: {:} {:}'
-                template = '{:}: {:} [ {:} ] {:}: {:}'
+                pusher_name = data['pusher']['name']
+
+                try:
+                    if pusher_name in config.gitbots:
+                        return True
+                except:
+                    pass
+
                 ref = data['ref'].split('/')[-1]
                 repo_fullname = data['repository']['full_name']
                 fork = data['repository']['fork']
@@ -299,40 +305,24 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     except:
                         return True
 
-                out_messages = []
-                out_names = []
-                out_commithashes = []
-                out_commitmessages = []
-                out_files = []
-                for commit in data['commits']:
-                    out_names.append(data['pusher']['name'])
-                    out_commithashes.append(commit['id'][:7])
-                    out_commitmessages.append(commit['message'])
-                    out_files.append(', '.join(commit['modified'] + commit['added']))
-                    out_messages.append(commit['message'])
-                    #messages.append(truncate(commit['message'], template.format(
-                    #out_messages.append(truncate(commit['message'], template.format(
-                    #    data['repository']['name'],
-                    #    data['pusher']['name'],
-                    #    ', '.join(commit['modified'] + commit['added']),
-                    #    '{}',
-                    #    commit['url'][:commit['url'].rfind('/') + 7]
-                    #)))
-                out_message = truncate(" * ".join(out_messages), template.format(
-                    data['repository']['name'],
-                    ', '.join(set(out_names)),
-                    #"[ "+' '.join(out_commithashes)+" ]",
-                    ' '.join(out_commithashes),
-                    ', '.join(set(out_files)),
-                    '{}'
-                ))
+                template = '{:}: {:} [ {:} ] {:}: {:}'
 
-                # FIXME: implement blacklist so as not to hard-code this
-                if data['pusher']['name'] != "ApertiumBot":
-                    #messages.append(", ".join(out_messages))
-                    messages.append(out_message)
-                else:
-                    return True
+                out_messages = []
+                out_commithashes = []
+                out_files = set()
+
+                for commit in data['commits']:
+                    out_commithashes.append(commit['sha'][:7])
+                    out_files.update(commit['modified'], commit['added'])
+                    out_messages.append(commit['message'])
+
+                messages.append(truncate(" * ".join(out_messages), template.format(
+                    data['repository']['name'],
+                    pusher_name,
+                    ' '.join(out_commithashes),
+                    ', '.join(out_files),
+                    '{}'
+                )))
 
             elif event == 'release':
                 template = '{:}: {:} * release {:} {:} {:}'
@@ -476,6 +466,23 @@ def gitserver(phenny, input):
 # command metadata and invocation
 gitserver.name = "gitserver"
 gitserver.rule = ('.gitserver', '(.*)')
+
+
+def to_commit(phenny, input):
+    api = "https://api.github.com/search/commits?q=%s"
+    # currently experimental API
+    headers = { "Accept": "application/vnd.github.cloak-preview" }
+
+    sha = input.group(1)
+    json = web.get(api % sha, headers=headers)
+    data = json.loads(json)
+
+    item = data["items"][0]
+    html_url = item["html_url"]
+
+    phenny.reply(html_url)
+to_commit.name = "to_commit"
+to_commit.rule = '!commit ([0-9a-f]{7,40})'
 
 
 def get_commit_info(phenny, repo, sha):

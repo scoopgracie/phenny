@@ -10,6 +10,7 @@ owner = 'yournickname'
 greetings = {'#example': 'example greeting %name %channel', '#test': 'welcome to %channel %name'}
 
 githook_autostart = False
+gitbots = ['ApertiumBot']
 
 # password is the NickServ password, serverpass is the server password
 # password = 'example'
