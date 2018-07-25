@@ -120,6 +120,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             logger.error('Error 400 (no valid payload)')
             logger.error(str(error))
 
+            # 400 Bad Request
             self.send_response(400)
             self.end_headers()
 
@@ -130,24 +131,27 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
         try:
             if self.do_POST_unsafe(data):
-                # send OK code
+                # 200 OK
                 self.send_response(200)
                 self.end_headers()
+                return
         except Exception as error:
-            try:
-                commits = [commit['url'] for commit in data['commits']]
-                logger.error('Error 501 (commits were ' + ', '.join(commits) + ')')
-            except:
-                logger.error('Error 501 (commits unknown or malformed)')
-
-            logger.error(str(data))
             logger.error(str(error))
 
-            self.send_response(501)
-            self.end_headers()
+        logger.error(str(data))
 
-            for channel in self.phenny.config.channels:
-                self.phenny.msg(channel, 'Webhook received problematic payload')
+        try:
+            commits = [commit['url'] for commit in data['commits']]
+            logger.error('Internal Error (commits were ' + ', '.join(commits) + ')')
+        except:
+            logger.error('Internal Error (commits unknown or malformed)')
+
+        for channel in self.phenny.config.channels:
+            self.phenny.msg(channel, 'Webhook received problematic payload')
+
+        # 500 Internal Server Error
+        self.send_response(500)
+        self.end_headers()
 
     def do_POST_unsafe(self, data):
         '''Runs once per event. One repository. One event type.'''
@@ -377,8 +381,6 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 messages.append("Don't know about '" + event + "' events")
             else:
                 messages.append("Unable to deal with unknown event")
-
-            return False
 
         # post all messages to all channels
 
