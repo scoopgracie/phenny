@@ -103,6 +103,8 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         '''Handles POST requests for all hooks.'''
 
+        receive_time = time.time()
+
         try:
             # read and decode data
             logger.debug('payload received; headers: '+str(self.headers))
@@ -130,13 +132,30 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         try:
-            if self.do_POST_unsafe(data):
-                # 200 OK
-                self.send_response(200)
-                self.end_headers()
-                return
+            result = self.do_POST_unsafe(data)
         except Exception as error:
             logger.error(str(error))
+
+        if result:
+            status = 200 # OK
+        else:
+            status = 500 # Internal Server Error
+
+        self.send_response(status)
+        self.end_headers()
+
+        send_time = time.time()
+        respond_time = send_time - receive_time
+        logger.debug("responded '{:}' in {:.2f}s".format(status, respond_time))
+
+        if result:
+            # post all messages to all channels
+            channels, messages = result
+
+            for channel in channels:
+                more.add_messages(self.phenny, channel, messages)
+
+            return
 
         logger.error(str(data))
 
@@ -148,10 +167,6 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
         for channel in self.phenny.config.channels:
             self.phenny.msg(channel, 'Webhook received problematic payload')
-
-        # 500 Internal Server Error
-        self.send_response(500)
-        self.end_headers()
 
     def do_POST_unsafe(self, data):
         '''Runs once per event. One repository. One event type.'''
@@ -188,7 +203,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 event_types = None
 
             if (event_types is not None) and (event not in event_types):
-                return True
+                return [], []
 
             channels = config.git_channels.get(event, channels)
 
@@ -295,7 +310,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
                 try:
                     if pusher_name in config.gitbots:
-                        return True
+                        return [], []
                 except:
                     pass
 
@@ -307,7 +322,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     try:
                         channels = config.branch_channels[repo_fullname][ref]
                     except:
-                        return True
+                        return [], []
 
                 template = '{:}: {:} [ {:} ] {:}: {:}'
 
@@ -382,12 +397,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 messages.append("Unable to deal with unknown event")
 
-        # post all messages to all channels
-
-        for channel in channels:
-            more.add_messages(self.phenny, channel, messages)
-
-        return True
+        return channels, messages
 
     def getBBFiles(self, filelist):
         '''Sort filelist into added, modified, and removed files
