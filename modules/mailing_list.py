@@ -7,7 +7,7 @@ author: mattr555 <mattramina@gmail.com>
 import threading
 import imaplib
 import email
-from email.header import decode_header
+from email.header import decode_header, make_header
 from email.utils import parsedate_tz
 import datetime
 import re
@@ -64,7 +64,7 @@ def login(phenny):
 def format_email(e, list_name):
     subject = e['Subject']
     subject = re.sub(r"(=\?.*\?=)(?!$)", r"\1 ", subject)
-    subject = ''.join([str(t[0], t[1] or 'utf-8') for t in decode_header(subject)])
+    subject = str(make_header(decode_header(subject)))
     subject = subject.replace('['+list_name.capitalize()+'] ', '')
 
     # message = '{}: {} * {} * {}'.format(list_name, obfuscate_address(e['From']), subject, strip_reply_lines(e))
