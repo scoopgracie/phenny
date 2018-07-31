@@ -20,11 +20,13 @@ def get_definition(phenny, word, to_user=None):
         raise GrumbleError(
             "Urban Dictionary slemped out on me. Try again in a minute.") from e
 
-    if data['result_type'] == 'no_results':
+    results = data['list']
+
+    if not results:
         phenny.say("No results found for {0}".format(word))
         return
 
-    result = data['list'][0]
+    result = results[0]
     url = 'http://www.urbandictionary.com/define.php?term={0}'.format(
         web.quote(word))
 
@@ -45,13 +47,6 @@ def urbandict(phenny, input):
 
     if "->" in word: return
     if "→" in word: return
-
-    # create opener
-    #opener = urllib.request.build_opener()
-    #opener.addheaders = [
-    #    ('User-agent', web.Grab().version),
-    #    ('Referer', "http://m.urbandictionary.com"),
-    #]
 
     match_point_cmd = r'point\s(\S*)\s(.*)'
     matched_point = re.compile(match_point_cmd).match(word)
