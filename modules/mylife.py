@@ -13,11 +13,7 @@ from random import choice
 
 def fml(phenny, input):
     """.fml - Grab something from fmylife.com."""
-    try:
-        req = web.get("http://www.fmylife.com/random")
-    except Exception as e:
-        raise GrumbleError("I tried to use .fml, but it was broken. FML") from e
-
+    req = web.get("http://www.fmylife.com/random")
     doc = lxml.html.fromstring(req)
     quote = choice(doc.xpath(".//p[@class = 'block hidden-xs']")).text_content().strip()
     phenny.say(quote)
@@ -26,11 +22,7 @@ fml.commands = ['fml']
 
 def mlia(phenny, input):
     """.mlia - My life is average."""
-    try:
-         req = web.get("http://mylifeisaverage.com/")
-    except Exception as e:
-        raise GrumbleError("I tried to use .mlia, but it wasn't loading. MLIA") from e
-
+    req = web.get("http://mylifeisaverage.com/")
     doc = lxml.html.fromstring(req)
     quote = choice(doc.find_class('story')).text_content().strip()
     phenny.say(quote)

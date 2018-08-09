@@ -27,12 +27,8 @@ def _sign_vote(api_key, args):
 def food(phenny, input):
     """.food"""
     key = input.group(2) or input.sender
-    try:
-        req = web.get(API_URL + '/food/' + web.quote(key.strip()))
-        data = json.loads(req)
-    except Exception as e:
-        raise GrumbleError("Uh oh, I couldn't contact foodforus. HOW WILL WE "\
-                "EAT NOW‽") from e
+    req = web.get(API_URL + '/food/' + web.quote(key.strip()))
+    data = json.loads(req)
 
     restaurants = data['restaurants'][:4]
     times = data['times'][:4]
@@ -63,12 +59,8 @@ def foodvote(phenny, input):
     }
     postdata['sig'] = _sign_vote(phenny.config.foodforus_api_key, postdata)
 
-    try:
-        req = web.post(API_URL + '/vote', postdata)
-        data = json.loads(req)
-    except Exception as e:
-        raise GrumbleError("Uh oh, I couldn't contact foodforus. HOW WILL WE "\
-                "EAT NOW‽") from e
+    req = web.post(API_URL + '/vote', postdata)
+    data = json.loads(req)
 
     if 'error' in data:
         phenny.reply(data['error'])
@@ -79,12 +71,8 @@ foodvote.rule = (['foodvote'], r'(.*) (\d{2}:\d{2})( .*)?')
 
 def pickfood(phenny, input):
     key = input.group(2) or input.sender
-    try:
-        req = web.get(API_URL + '/food/' + web.quote(key.strip()))
-        data = json.loads(req)
-    except Exception as e:
-        raise GrumbleError("Uh oh, I couldn't contact foodforus. HOW WILL WE "\
-                "EAT NOW‽") from e
+    req = web.get(API_URL + '/food/' + web.quote(key.strip()))
+    data = json.loads(req)
 
     if len(data['restaurants']) > 0 and len(data['times']) > 0:
         restaurant = data['restaurants'][0]

@@ -10,15 +10,12 @@ import json
 import re
 
 
+API_URL = "http://api.urbandictionary.com/v0/define?term={0}"
+WEB_URL = "http://www.urbandictionary.com/define.php?term={0}"
+
 def get_definition(phenny, word, to_user=None):
-    try:
-        data = web.get(
-            "http://api.urbandictionary.com/v0/define?term={0}".format(
-                web.quote(word)))
-        data = json.loads(data)
-    except Exception as e:
-        raise GrumbleError(
-            "Urban Dictionary slemped out on me. Try again in a minute.") from e
+    data = web.get(API_URL.format(web.quote(word)))
+    data = json.loads(data)
 
     results = data['list']
 
@@ -27,8 +24,7 @@ def get_definition(phenny, word, to_user=None):
         return
 
     result = results[0]
-    url = 'http://www.urbandictionary.com/define.php?term={0}'.format(
-        web.quote(word))
+    url = WEB_URL.format(web.quote(word))
 
     response = "{0} - {1}".format(result['definition'].strip()[:256], url)
     if to_user:
