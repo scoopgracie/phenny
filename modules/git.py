@@ -207,7 +207,13 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             if (event_types is not None) and (event not in event_types):
                 return [], []
 
-            channels = config.git_channels.get(event, channels)
+            if config.git_channels:
+                full_name = data['repository']['full_name']
+                channels = []
+
+                for key, value in config.git_channels.items():
+                    if fnmatch(full_name, key):
+                        channels = value
 
             if event == 'commit_comment':
                 commit = data['comment']['commit_id'][:7]
@@ -310,11 +316,8 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             elif event == 'push':
                 pusher_name = data['pusher']['name']
 
-                try:
-                    if pusher_name in config.gitbots:
-                        return [], []
-                except:
-                    pass
+                if pusher_name in config.gitbots:
+                    return [], []
 
                 ref = data['ref'].split('/')[-1]
                 repo_fullname = data['repository']['full_name']

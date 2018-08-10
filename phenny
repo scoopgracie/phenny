@@ -126,6 +126,7 @@ def main(argv=None):
             'ipv6': False,
             'password': None,
             'githook_autostart': False,
+            'gitbots': [],
             'git_channels': {},
             'git_events': {},
         }
