@@ -2,7 +2,12 @@
 import math
 import os
 import sqlite3
+import time
+from threading import Lock, Thread
 from tools import db_path
+
+lock = Lock()
+users = set()
 
 def setup(self):
     self.logger_db = db_path(self, 'logger')
@@ -23,9 +28,13 @@ def setup(self):
     c.close()
 
 def greeting(phenny, input):
+    with lock: users.add(input.nick)
+
     if "[m]" in input.nick:
         hint = "Consider removing [m] from your IRC nick! See http://wiki.apertium.org/wiki/IRC/Matrix#Remove_.5Bm.5D_from_your_IRC_nick for details."
         phenny.msg(input.nick, input.nick + ": " + hint)
+
+    messages = []
 
     if not greeting.conn:
         greeting.conn = sqlite3.connect(phenny.logger_db)
@@ -39,17 +48,12 @@ def greeting(phenny, input):
     greetingmessage = greetingmessage.replace("%name", input.nick)
     greetingmessage = greetingmessage.replace("%channel", input.sender)
 
-    # Greeting Message
-    try:
-        nick = input.nick
-    except UnboundLocalError:
-        pass
+    nick = input.nick
 
     c = greeting.conndb.cursor()
     c.execute("SELECT * FROM special_nicks WHERE nick = ?", (nick.casefold(),))
     try:
-        phenny.say(input.nick + ": " + str(c.fetchone()[0]))
-        return
+        messages.append(input.nick + ": " + str(c.fetchone()[0]))
     except TypeError:
         pass
     c.close()
@@ -66,10 +70,26 @@ def greeting(phenny, input):
             phenny.greeting_count[caseless_nick] += 1
 
             if math.log2(phenny.greeting_count[caseless_nick]) % 1 == 0:
-                phenny.say(greetingmessage)
+                messages.append(greetingmessage)
 
     c.close()
     greeting.conn.commit()
+
+    def delayed():
+        time.sleep(phenny.config.greet_delay)
+
+        if input.nick not in users:
+            return
+
+        for message in messages[:1]:
+            phenny.say(message)
+
+    if phenny.config.greet_delay > 0:
+        t = Thread(target=delayed)
+        t.start()
+    else:
+        for message in messages[:1]:
+            phenny.say(message)
 
 greeting.conn = None
 greeting.conndb = None
@@ -77,6 +97,32 @@ greeting.event = "JOIN"
 greeting.priority = 'low'
 greeting.rule = r'(.*)'
 greeting.thread = False
+
+def quitting(phenny, input):
+    with lock: users.discard(input.nick)
+
+quitting.event = "QUIT"
+quitting.rule = r'(.*)'
+
+def parting(phenny, input):
+    with lock: users.discard(input.nick)
+
+parting.event = "PART"
+parting.rule = r'(.*)'
+
+def kicked(phenny, input):
+    with lock: users.discard(input.args[2])
+
+kicked.event = "KICK"
+kicked.rule = r'(.*)'
+
+def nickchange(phenny, input):
+    with lock:
+        users.discard(input.nick)
+        users.add(input.args[1])
+
+nickchange.event = "NICK"
+nickchange.rule = r'(.*)'
 
 def greeting_add(phenny, input):
     if input.admin:
