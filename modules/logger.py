@@ -7,14 +7,15 @@ author: mutantmonkey <mutantmonkey@mutantmonkey.in>
 import os
 import random
 import sqlite3
-from tools import db_path
+from tools import DatabaseCursor, db_path
 
 def setup(self):
     self.logger_db = db_path(self, 'logger')
-    self.logger_conn = sqlite3.connect(self.logger_db)
 
-    c = self.logger_conn.cursor()
-    c.execute('''create table if not exists lines_by_nick (
+    connection = sqlite3.connect(self.logger_db)
+    cursor = connection.cursor()
+
+    cursor.execute('''create table if not exists lines_by_nick (
         channel     varchar(255),
         nick        varchar(255),
         lines       unsigned big int not null default 0,
@@ -24,10 +25,10 @@ def setup(self):
         unique (channel, nick) on conflict replace
     );''')
 
-def logger(phenny, input):
-    if not logger.conn:
-        logger.conn = sqlite3.connect(phenny.logger_db)
+    cursor.close()
+    connection.close()
 
+def logger(phenny, input):
     sqlite_data = {
         'channel': input.sender,
         'nick': input.nick.casefold(),
@@ -39,31 +40,20 @@ def logger(phenny, input):
     if sqlite_data['msg'][:8] == '\x01ACTION ':
         sqlite_data['msg'] = '* {0} {1}'.format(sqlite_data['nick'], sqlite_data['msg'][8:-1])
 
-    c = logger.conn.cursor()
-    c.execute('''insert or replace into lines_by_nick
+    with DatabaseCursor(phenny.logger_db) as cursor:
+        cursor.execute('''insert or replace into lines_by_nick
                     (channel, nick, lines, characters, last_time, quote)
-                    values(
-                        :channel,
-                        :nick,
+                    values(:channel, :nick,
                         coalesce((select lines from lines_by_nick where
                             channel=:channel and nick=:nick) + 1, 1),
                         coalesce((select characters from lines_by_nick where
                             channel=:channel and nick=:nick) + :chars, :chars),
-                        CURRENT_TIMESTAMP,
-                        :msg
+                        CURRENT_TIMESTAMP, :msg
                     );''', sqlite_data)
-    c.close()
 
-    c = logger.conn.cursor()
-    c.execute('update lines_by_nick set quote=:msg where channel=:channel \
-                and nick=:nick', sqlite_data)
-    c.close()
-
-    logger.conn.commit()
-logger.conn = None
+        cursor.execute('update lines_by_nick set quote=:msg where channel=:channel and nick=:nick', sqlite_data)
 logger.priority = 'low'
 logger.rule = r'(.*)'
-logger.thread = False
 
 if __name__ == '__main__':
     print(__doc__.strip())
