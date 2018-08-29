@@ -138,7 +138,7 @@ class Phenny(irc.Bot):
         keys = []
 
         if func.point:
-            keys.append(regexp + '()')
+            keys.append('(?!.*(?:->|→))' + regexp + '()')
             keys.append(regexp + '\s(?:->|→)\s(\S*)')
         else:
             keys.append(regexp)
