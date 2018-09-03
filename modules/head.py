@@ -127,10 +127,10 @@ def gettitle(phenny, input, uri):
 
     if uri.startswith('http://wiki.apertium.org/wiki/'):
         item = uri[len('http://wiki.apertium.org/wiki/'):]
-        return apertium_wiki.awik(phenny, re.match(r'(blahblah)?(.*)', item))
+        return apertium_wiki.awik(phenny, re.match(r'(blahblah)?(.*)()', item))
     if re.match(r'https?://en.wiktionary.org/wiki/(.*)', uri):
         item = re.match(r'https?://en.wiktionary.org/wiki/(.*)', uri).group(1)
-        return wiktionary.w(phenny, re.match(r'(blahblah)?(.*)', web.unquote(item)))
+        return wiktionary.w(phenny, re.match(r'(blahblah)?(.*)()', web.unquote(item)))
     if re.match(r'https?://([a-z]{2,3}).wikipedia.org/wiki/(.*)', uri):
         match = re.match(r'https?://([a-z]{2,3}).wikipedia.org/wiki/(.*)', uri)
         lang, page = match.group(1), match.group(2)
