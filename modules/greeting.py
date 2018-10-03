@@ -52,7 +52,7 @@ def greeting(phenny, input):
         cursor.execute("SELECT * FROM special_nicks WHERE nick = ?", (nick,))
 
         try:
-            phenny.say(input.nick + ": " + str(cursor.fetchone()[0]))
+            phenny.msg(input.nick, input.nick + ": " + str(cursor.fetchone()[0]))
             return
         except TypeError:
             pass
@@ -67,7 +67,7 @@ def greeting(phenny, input):
                 phenny.greeting_count[nick] += 1
 
                 if math.log2(phenny.greeting_count[nick]) % 1 == 0:
-                    phenny.say(greetingmessage)
+                    phenny.msg(input.nick, greetingmessage)
 
 greeting.event = "JOIN"
 greeting.priority = 'low'

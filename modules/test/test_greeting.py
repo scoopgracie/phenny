@@ -30,7 +30,7 @@ class TestGreeting(unittest.TestCase):
         self.phenny.config.greetings[self.input.sender] = message
 
         for i in range(256):
-            self.phenny.say.reset_mock()
+            self.phenny.msg.reset_mock()
             greeting.greeting(self.phenny, self.input)
             caseless_nick = self.input.nick.casefold()
 
@@ -39,9 +39,9 @@ class TestGreeting(unittest.TestCase):
                 greetingmessage = greetingmessage.replace("%name", self.input.nick)
                 greetingmessage = greetingmessage.replace("%channel", self.input.sender)
 
-                self.phenny.say.assert_called_once_with(greetingmessage)
+                self.phenny.msg.assert_called_once_with(self.input.nick, greetingmessage)
             else:
-                self.phenny.say.assert_not_called()
+                self.phenny.msg.assert_not_called()
 
     def test_greeting_remove_m_hint(self):
         self.input.nick = 'Test[m]worth'
