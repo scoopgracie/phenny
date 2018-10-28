@@ -34,7 +34,7 @@ def gen_code(nick, mentor_nick):
         m = hashlib.sha256()
         m.update(nick.encode())
         m.update(mentor_nick.encode())
-        return m.hexdigest()[8:]        
+        return m.hexdigest()[:8]        
 
 def select(phenny, nick):
     sqlite_data = {
