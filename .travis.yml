@@ -21,7 +21,7 @@ script:
 
 before_cache: ./clean-cache.sh
 
-after_sucess:
+after_success:
     - coveralls
 
 notifications:
