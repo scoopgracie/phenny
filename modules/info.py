@@ -12,32 +12,35 @@ def help(phenny, input):
     command = input.group(1)
 
     # work out a help URL to display
-    if hasattr(phenny.config, 'helpurl'):
+    try:
         helpurl = phenny.config.helpurl
-    else:
+    except AttributeError:
         helpurl = "http://wiki.apertium.org/wiki/Begiak"
+
+    commands = [func for priority, commands in phenny.commands.items()
+            for regex, funcs in commands.items() for func in funcs]
 
     if input.sender.startswith('#'):
         # channels get a brief message instead
         phenny.say(
             "Hey there, I'm a friendly bot for #apertium. Say \".help\" "
             "to me in private for a list of my commands or check out my help "
-            "page at {helpurl}.".format(
-            helpurl=helpurl,
-            owner=phenny.config.owner))
-    elif command is not None:
+            "page at {helpurl}.".format(helpurl=helpurl))
+    elif command:
         command = command.lower()
         if command in phenny.doc:
             phenny.say(phenny.doc[command][0])
             if phenny.doc[command][1]: 
                 phenny.say('e.g. ' + phenny.doc[command][1])
+        elif any(func.name == command.name for command in commands):
+            phenny.say("Sorry, I don't know how to use that command.")
         else:
-            phenny.say("Sorry, I'm not that kind of bot.")
+            phenny.say("Sorry, I don't know that command.")
     else:
-        commands = ', '.join(sorted(phenny.doc.keys()))
+        command_names = ', '.join(sorted(command.name for command in commands))
         phenny.say(
             "Hey there, I'm a friendly bot! Here are the commands I "
-            "recognize: {commands}".format(commands=commands))
+            "recognize: {commands}".format(commands=command_names))
         phenny.say(
             "For help with a command, just use .help followed by the name of"
             " the command, like \".help botsnack\".")
