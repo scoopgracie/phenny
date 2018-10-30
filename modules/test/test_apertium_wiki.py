@@ -1,7 +1,8 @@
 import unittest
 from mock import MagicMock
 from modules import apertium_wiki
-from web import catch_timeout
+from web import catch_timeout, get
+from datetime import date, timedelta
 import wiki
 
 
@@ -10,7 +11,7 @@ class TestApertiumWiki(unittest.TestCase):
     def setUp(self):
         self.phenny = MagicMock()
         self.input = MagicMock()
-
+        self.phenny.channels = ["#apertium"]
         self.term = None
         self.section = None
 
@@ -77,3 +78,61 @@ class TestApertiumWiki(unittest.TestCase):
 
         expected = "Can't find anything in the Apertium Wiki for \"%s\"."
         self.assertEqual(out, expected % self.text)
+
+    def test_logs_today(self):
+        self.input.group = lambda x: [None, 'today'][x]
+        apertium_wiki.logs(self.phenny, self.input)
+        out = self.phenny.say.call_args[0][0]
+        string_check = "Log at " in out
+
+        if string_check:
+            url = out[7:]
+            out_check = str(date.today()) in out
+        self.assertTrue(string_check and out_check)
+
+    def test_logs_yesterday(self):
+        self.input.group = lambda x: [None, 'yesterday'][x]
+        apertium_wiki.logs(self.phenny, self.input)
+        out = self.phenny.say.call_args[0][0]
+        string_check = "Log at " in out
+
+        if string_check:
+            url = out[7:]
+            out_check = str(date.today() - timedelta(1)) in out
+        self.assertTrue(string_check and out_check)
+
+    def test_logs_last_week(self):
+        self.input.group = lambda x: [None, 'last monday'][x]
+        apertium_wiki.logs(self.phenny, self.input)
+        out = self.phenny.say.call_args[0][0]
+        string_check = "Log at " in out
+
+        if string_check:
+            url = out[7:]
+            last_mon = str(date.today() - timedelta(7 - date.today().weekday()))
+            out_check = last_mon in out
+            self.assertTrue(string_check and out_check)
+
+    def test_logs_good_date(self):
+        self.input.group = lambda x: [None, '10/23/2018'][x]
+        apertium_wiki.logs(self.phenny, self.input)
+        out = self.phenny.say.call_args[0][0]
+        string_check = "Log at " in out
+
+        if string_check:
+            url = out[7:]
+            day_query = str(date(2018, 10, 23))
+            out_check = day_query in out
+        self.assertTrue(string_check and out_check)
+
+    def test_logs_bad_date(self):
+        self.input.group = lambda x: [None, '99/99/9999'][x]
+        apertium_wiki.logs(self.phenny, self.input)
+        out = self.phenny.say.call_args[0][0]
+        string_check = "Log at " in out
+
+        if string_check:
+            url = out[7:]
+            day_query = str(date(9999, 99, 99))
+            out_check = day_query in out
+        self.assertFalse(string_check and out_check)
