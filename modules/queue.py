@@ -94,11 +94,11 @@ def get_indices(phenny, raw, queue_name, queue):
 def queue(phenny, input):
     """.queue- queue management."""
 
-    command = input.group(1).lower()
-
-    if not command:
+    if not input.group(1):
         phenny.reply('Commands: ' + '; '.join(commands))
         return
+
+    command = input.group(1).lower()
 
     if command == 'display':
         search = input.group(2)
@@ -145,6 +145,7 @@ def queue(phenny, input):
     elif command == 'new':
         if not input.group(2):
             phenny.reply('Syntax: .queue new <name> <item1>, <item2> ...')
+            return
 
         queue_name = input.nick + ':' + input.group(2)
         owner = input.nick
@@ -168,6 +169,7 @@ def queue(phenny, input):
     elif command in ['delete', 'remove', 'del', 'rm']:
         if not input.group(2):
             phenny.reply('Syntax: .queue delete <name>')
+            return
 
         queue_name, queue = get_queue(phenny.queue_data, input.group(2), input.nick)
 

@@ -42,7 +42,7 @@ def add_messages(phenny, target, messages, tag=None):
         return
 
     phenny.msg(target, messages.pop(0))
-    phenny.msg(target, 'Please type ".more" to view remaining messages.')
+    phenny.msg(target, 'Type ".more" to view remaining {num} messages.'.format(num=len(messages)))
 
     target = target.casefold()
 
@@ -66,8 +66,11 @@ def more(phenny, input):
 
     if count_more(phenny, input.nick, tag):
         show_more(phenny, input.nick, count, tag)
-    elif (input.admin or input.owner) and count_more(phenny, input.sender, tag):
-        show_more(phenny, input.sender, count, tag)
+    elif count_more(phenny, input.sender, tag):
+        if input.admin:
+            show_more(phenny, input.sender, count, tag)
+        else:
+            phenny.reply("Only admins can use .more on channels.")
     else:
         phenny.reply("No more queued messages")
 

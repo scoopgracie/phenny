@@ -103,7 +103,7 @@ class TestMore(unittest.TestCase):
         self.create_messages(self.input.sender, 3)
 
         self.fetch(False, False, None, None)
-        assert_call(self.phenny.reply, "No more queued messages")
+        assert_call(self.phenny.reply, "Only admins can use .more on channels.")
 
     def test_more_admin_user(self):
         self.create_messages(self.input.nick, 3)

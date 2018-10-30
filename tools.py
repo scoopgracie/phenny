@@ -153,11 +153,11 @@ def break_up(text, max_length=max_message_length, max_count=None):
         else:
             msg_break = newline_index
 
-        message = text[:msg_break]
+        message = text[:msg_break].strip()
         text = text[msg_break + offset:]
 
         # We want to add "..." to last message
-        if max_count and len(parts) == max_count - 1:
+        if max_count and len(parts) == max_count - 1 and message:
             message += b'...'
             text = b''
 
