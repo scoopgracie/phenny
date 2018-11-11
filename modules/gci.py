@@ -136,7 +136,7 @@ def linking(phenny, input):
         return
     
     mentor_nick = input.nick.casefold()
-    nick = input.group(1)
+    nick = input.group(1).casefold()
     code = gen_code(nick, mentor_nick)
 
     insert(phenny, nick, mentor_nick, code)
@@ -154,13 +154,14 @@ def checking(phenny, input):
     
     t = select(phenny, nick)
     if not t:
-        phenny.reply("The nick '{}' isn't linked.".format(t))
+        phenny.reply("The nick '{}' isn't linked.".format(nick))
         return
 
     if nick in phenny.gci_data:
         commutate(phenny, nick)
     mentor_nick, code, all_time = t
-    phenny.reply("nick: {}, mentor: {}, code: {}, all time: {} s ({:.2f} hrs)" % (nick, mentor_nick, code, int(all_time), int(all_time) / 3600))
+    phenny.reply("nick: {}, mentor: {}, code: {}, all time: {} s ({:.2f} hrs)"
+                 .format(nick, mentor_nick, code, int(all_time), int(all_time) / 3600))
 
 checking.rule = r'\.gci_check(?:\s+(.+))'
 
