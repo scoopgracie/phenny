@@ -229,15 +229,15 @@ class Bot(asynchat.async_chat):
                     time.sleep(wait - elapsed)
 
         # Loop detection
-        messages = [m[1] for m in self.stack[-8:]]
-        if messages.count(text) >= 5: 
+        messages = [m[1:3] for m in self.stack[-10:]]
+        if messages.count((recipient, text)) >= 3:
             text = '...'
-            if messages.count('...') >= 3: 
+            if messages.count((recipient, text)) >= 3:
                 self.sending.release()
                 return
 
         self.proto.privmsg(recipient, text)
-        self.stack.append((time.time(), text))
+        self.stack.append((time.time(), recipient, text))
         self.stack = self.stack[-10:]
 
         self.sending.release()
