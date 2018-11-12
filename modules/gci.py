@@ -190,7 +190,7 @@ def nickchange(phenny, input):
     old_nick = input.nick.casefold()
     new_nick = input.args[1].casefold()
 
-    t = select(old_nick)
+    t = select(phenny, old_nick)
     if not t:
         # nick not linked, don't care
         return
