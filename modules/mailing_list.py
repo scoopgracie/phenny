@@ -98,10 +98,7 @@ def check_mail(phenny):
                     channels = [channels]
 
                 for channel in channels:
-                    if not channel in messages:
-                        messages[channel].append(message)
-                    else:
-                        messages[channel] = [message]
+                    messages.setdefault(channel, []).append(message)
 
         rc, data = mail.uid('store', uid, '+FLAGS', '(\\Seen)')
 
