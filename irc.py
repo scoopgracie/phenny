@@ -246,23 +246,34 @@ class Bot(asynchat.async_chat):
         text = "\x01ACTION {0}\x01".format(text)
         return self.msg(recipient, text)
 
-    def error(self, msg):
+    def error(self, report, max_path=10):
         try: 
             trace = traceback.format_exc()
             logger.error(str(trace))
             lines = list(reversed(trace.splitlines()))
 
-            report = [lines[0].strip()]
-            for line in lines: 
-                line = line.strip()
-                if line.startswith('File "/'): 
-                    report.append(line[0].lower() + line[1:])
-                    break
-            else: report.append('source unknown')
+            msg = lines[0].strip()
+            path = []
 
-            msg(report[0] + ' (' + report[1] + ')')
+            for line in lines:
+                line = line.strip()
+
+                if line.startswith('File "/'):
+                    path.append(line)
+
+                    if line.endswith("in call"):
+                        break
+
+            if path[-1].endswith("in call"):
+                # drop 'call' and 'rephrase_errors'
+                path = path[:-2]
+                path = path[:max_path]
+            else:
+                path = [path[0] + " (unknown caller)"]
+
+            report(msg, *path)
         except:
-            msg("Got an error.")
+            report("Got an error.")
 
 
 class TestBot(Bot): 

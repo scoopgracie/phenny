@@ -238,14 +238,18 @@ class Phenny(irc.Bot):
         return CommandInput(text, origin, match, args)
 
     def call(self, func, origin, phenny, input):
-        def report(text):
+        def report(*lines, verbose=True):
             for admin in self.config.admins:
-                self.msg(admin, text)
+                if verbose:
+                    self.msg(admin, "Error in '{}/{}' with input '{}'"
+                                    .format(func.__module__, func.__name__, input.bytes))
+                for line in lines:
+                    self.msg(admin, line)
 
         try:
             rephrase_errors(func, phenny, input)
         except GrumbleError as e:
-            report(str(e))
+            report(str(e), verbose=False)
         except Exception as e: 
             self.error(report)
 
