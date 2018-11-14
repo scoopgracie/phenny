@@ -120,16 +120,16 @@ class SVNPoller:
         else:
             comment = "no comment"
         #self.say(author, "∞", comment)
-        modified_paths = []
-        added_paths = []
-        removed_paths = []
+        modified = []
+        added = []
+        removed = []
         for path in tree.findall(".//path"):
             if path.get('action') == "A":
-                added_paths.append(path.text)
+                added.append(path.text)
             elif path.get('action') == "D":
-                removed_paths.append(path.text)
+                removed.append(path.text)
             else:
-                modified_paths.append(path.text)
+                modified.append(path.text)
         treeDate = tree.find(".//date")
         if treeDate is not None:
             date = time.strptime(tree.find(".//date").text,
@@ -137,18 +137,13 @@ class SVNPoller:
             date = time.strftime("%d %b %Y %H:%M:%S", date)
         else:
             date = "no date"
-        return self.repo, author, comment, modified_paths, added_paths, removed_paths, date, str(revision)
+        return self.repo, author, comment, modified, added, removed, date, str(revision)
 
     def generateReport(self, rev, showDate=False):
-        repo, author, comment, modified_paths, added_paths, removed_paths, date, rev = self.revision_info(
-            rev)
-        if showDate == True:
-            msg = generate_report(repo, author, comment, modified_paths,
-                                  added_paths, removed_paths, rev, date)
-        else:
-            msg = generate_report(repo, author, comment, modified_paths,
-                                  added_paths, removed_paths, rev, "")
-        return msg
+        repo, author, comment, modified, added, removed, date, rev = self.revision_info(rev)
+        if not showDate:
+            date = ""
+        return generate_report(repo, author, comment, modified, added, removed, rev, date)
 
     def sourceforgeURL(self, rev):
         if self.root.endswith('svn'):
@@ -159,11 +154,7 @@ class SVNPoller:
 
 def recentcommits(phenny, input):
     """List the most recent SVN commits."""
-    print("POLLING!!!!")
-    if phenny.config.svn_repositories is None:
-        phenny.say(
-            "SVN module cannot function without repositories being set in the config file!")
-        return
+    print("POLLING recent")
     for repo in phenny.config.svn_repositories:
         #phenny.say("{}: {}".format(repo, phenny.config.svn_repositories[repo]))
         poller = SVNPoller(repo, phenny.config.svn_repositories[repo])
@@ -172,6 +163,7 @@ def recentcommits(phenny, input):
         msg = poller.generateReport(rev, True)
         url = poller.sourceforgeURL(rev)
         phenny.say(truncate(msg, '{} ' + url))
+    print("POLLED recent")
 
 
 recentcommits.name = 'recent'
@@ -212,12 +204,7 @@ retrieve_commit_svn.rule = ('$nick', 'info(?: +(.*))')
 def pollsvn(phenny, input):
     global global_revisions, global_filename
     results = False
-    # phenny.say("POLLING!!!!")
-    print("POLLING!!!!")
-    if phenny.config.svn_repositories is None:
-        phenny.say(
-            "SVN module cannot function without repositories being set in the config file!")
-        return
+    print("POLLING")
     pollers = {}
     #phenny.say("OLD REVISION NUMBERS: " + str(global_revisions))
     for repo in phenny.config.svn_repositories:
@@ -253,7 +240,6 @@ def pollsvn(phenny, input):
                 if len(global_revisions) > 0:
                     print("dumping revisions")
                     dumpRevisions(global_filename, global_revisions)
-    # phenny.say("done")
     print("POLLED")
     return results
 
@@ -267,7 +253,7 @@ pollsvn.priority = 'medium'
 def esan(phenny, input):
     phenny.reply("Hold on a second, I'm polling!")
     results = pollsvn(phenny, input)
-    if results == False:
+    if not results:
         phenny.reply("Sorry, there was nothing to report.")
 
 

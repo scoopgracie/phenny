@@ -130,6 +130,8 @@ def main(argv=None):
             'gitbots': [],
             'git_channels': {},
             'git_events': {},
+            'git_repositories': {},
+            'svn_repositories': {},
         }
 
         for key, value in defaults.items():
