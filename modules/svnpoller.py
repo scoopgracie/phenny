@@ -3,11 +3,14 @@
 
 import re
 import os
+import logging
 from subprocess import Popen, PIPE
 import xml.etree.ElementTree as ET
 from io import StringIO
 import time
 from tools import db_path, generate_report, truncate
+
+logger = logging.getLogger('phenny')
 
 global_revisions = None
 global_filename = None
@@ -93,12 +96,14 @@ class SVNPoller:
         command = " ".join(self.pre)
         command = command + " " + " ".join(list(cmd))
         command = command + " " + " ".join([self.root])
-        pipe = Popen(command.split(" "), stdout=PIPE)
-        try:
-            data = pipe.communicate()[0]
-        except IOError:
-            data = ""
-        return ET.fromstring(data.decode())
+        logger.debug(command)
+        pipe = Popen(command.split(" "), stdout=PIPE, stderr=PIPE)
+        stdout, stderr = pipe.communicate()
+        stdout, stderr = stdout.decode(), stderr.decode()
+        if stderr:
+            logger.debug(stdout)
+            logger.error(stderr)
+        return ET.fromstring(stdout)
 
     def get_last_revision(self):
         global global_revisions
