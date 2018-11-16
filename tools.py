@@ -113,7 +113,11 @@ class DatabaseCursor():
         self.cursor.close()
         self.connection.close()
 
+socketserver.TCPServer.allow_reuse_address = True
+
 class PortReuseTCPServer(socketserver.TCPServer):
+    allow_reuse_address = True
+
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.server_address)

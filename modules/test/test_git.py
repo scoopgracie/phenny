@@ -6,7 +6,6 @@ author: nu11us <work.willeggleston@gmail.com>
 import unittest
 from mock import MagicMock
 from modules import git
-from threading import Thread
 
 
 class TestGit(unittest.TestCase):
@@ -21,17 +20,17 @@ class TestGit(unittest.TestCase):
         self.assertTrue(thread_status)
 
     def test_auto_start(self):
-        self.input.nick = "begiak2"
-        self.phenny.nick = "begiak2"
-        self.phenny.phenny.config.githook_autostart = True
+        self.input.nick = "begiak"
+        self.phenny.nick = "begiak"
+        self.phenny.config.githook_autostart = True
         git.auto_start(self.phenny, self.input)
-        thread_status = git.httpd or Thread(target=git.httpd.serve_forever).isAlive()
+        thread_status = git.httpd
         git.teardown(self.phenny)
         self.assertTrue(thread_status)
 
     def test_auto_start_fail(self):
-        self.input.nick = "not_begiak2"
-        self.phenny.nick = "begiak2"
+        self.input.nick = "not_begiak"
+        self.phenny.nick = "begiak"
         git.auto_start(self.phenny, self.input)
         self.assertFalse(git.httpd)
 

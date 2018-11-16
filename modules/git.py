@@ -27,18 +27,23 @@ PORT = 1234
 
 # module-global variables
 httpd = None
+thread = None
 lock = Lock()
 
 
 def close_socket():
-    global httpd
+    global httpd, thread
 
     with lock:
         if httpd:
             httpd.shutdown()
             httpd.server_close()
+            httpd = None
 
-        httpd = None
+        if thread:
+            thread.join()
+            thread = None
+
         MyHandler.phenny = None
 
 atexit.register(close_socket)
@@ -419,7 +424,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 def setup_server(phenny):
     '''Set up and start hooks server.'''
 
-    global httpd
+    global httpd, thread
 
     with lock:
         if httpd:
@@ -427,7 +432,9 @@ def setup_server(phenny):
 
         MyHandler.phenny = phenny
         httpd = PortReuseTCPServer(("", PORT), MyHandler)
-        Thread(target=httpd.serve_forever).start()
+        thread = Thread(target=httpd.serve_forever)
+        thread.daemon = True
+        thread.start()
 
 
 def auto_start(phenny, input):
@@ -438,6 +445,7 @@ def auto_start(phenny, input):
         setup_server(phenny)
 auto_start.rule = '(.*)'
 auto_start.event = 'JOIN'
+auto_start.thread = False
 
 
 def teardown(phenny):
@@ -486,6 +494,7 @@ def gitserver(phenny, input):
 # command metadata and invocation
 gitserver.name = "gitserver"
 gitserver.rule = ('.gitserver', '(.*)')
+gitserver.thread = False
 
 
 def to_commit(phenny, input):
