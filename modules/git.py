@@ -12,7 +12,7 @@ import logging
 import os
 import re
 import signal
-from threading import Thread
+from threading import Lock, Thread
 import time
 import urllib.parse
 
@@ -27,17 +27,19 @@ PORT = 1234
 
 # module-global variables
 httpd = None
+lock = Lock()
 
 
 def close_socket():
     global httpd
 
-    if httpd:
-        httpd.shutdown()
-        httpd.server_close()
+    with lock:
+        if httpd:
+            httpd.shutdown()
+            httpd.server_close()
 
-    httpd = None
-    MyHandler.phenny = None
+        httpd = None
+        MyHandler.phenny = None
 
 atexit.register(close_socket)
 
@@ -419,12 +421,13 @@ def setup_server(phenny):
 
     global httpd
 
-    if httpd:
-        return
+    with lock:
+        if httpd:
+            return
 
-    MyHandler.phenny = phenny
-    httpd = PortReuseTCPServer(("", PORT), MyHandler)
-    Thread(target=httpd.serve_forever).start()
+        MyHandler.phenny = phenny
+        httpd = PortReuseTCPServer(("", PORT), MyHandler)
+        Thread(target=httpd.serve_forever).start()
 
 
 def auto_start(phenny, input):
