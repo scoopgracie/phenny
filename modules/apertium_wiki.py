@@ -43,7 +43,8 @@ def awik(phenny, input):
     to_nick = input.group(3)
 
     if not origterm:
-        return phenny.say('Perhaps you meant ".wik Zen"?')
+        phenny.say('Perhaps you meant ".wik Zen"?')
+        return
 
     apertium_wiki(phenny, origterm, to_nick=to_nick)
 

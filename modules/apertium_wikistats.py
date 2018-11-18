@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-apertium_wiki.py - Phenny Apertium Wiki Stats Module
+apertium_wikistats.py - Phenny Apertium Wiki Stats Module
 """
 
 import os

@@ -49,13 +49,13 @@ def parse_term(origterm):
     return (term, section)
 
 def good_content(text, content):
-    if text.tag not in ['p', 'ul', 'ol']:
-        return False
-
     if not content.strip():
         return False
 
     if not breaks.search(content):
+        return False
+
+    if text.tag not in ['p', 'ul', 'ol']:
         return False
 
     if text.find(".//span[@id='coordinates']") is not None:
@@ -65,7 +65,7 @@ def good_content(text, content):
 
 def search_content(text):
     if text is None:
-        return None
+        return ""
 
     content = text.text_content()
 
@@ -73,9 +73,13 @@ def search_content(text):
         text = text.getnext()
 
         if text is None:
-            return None
+            return ""
 
-        content = text.text_content()
+        try:
+            content = text.text_content()
+        except ValueError:
+            # HtmlComment causes weird errors
+            content = ""
 
     return content
 
@@ -95,7 +99,7 @@ def extract_snippet(match, origsection=None):
         text = text.getparent().getnext()
         content = search_content(text)
 
-        if text is None:
+        if not content:
             return ("No section text found.", url)
     else:
         text = article.find('./p')
@@ -105,7 +109,7 @@ def extract_snippet(match, origsection=None):
 
         content = search_content(text)
 
-        if text is None:
+        if not content:
             return ("No introduction text found.", url)
 
     sentences = [x.strip() for x in breaks.split(content)]
