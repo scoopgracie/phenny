@@ -109,7 +109,6 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_POST(self):
         '''Handles POST requests for all hooks.'''
-
         receive_time = time.time()
 
         try:
@@ -179,7 +178,6 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_POST_unsafe(self, data):
         '''Runs once per event. One repository. One event type.'''
-
         config = self.phenny.config
 
         default_channels = config.git_channels.get('*', config.channels)
@@ -211,7 +209,12 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 event_types = None
 
-            if (event_types is not None) and (event not in event_types):
+            event_in_config = False
+            for event_type in event_types:
+                if (event + '_' + data['action'] == event_type) or (event == event_type):
+                     event_in_config = True
+
+            if (event_types is not None) and ((event not in event_types) and (not event_in_config)):
                 return [], []
 
             if config.git_channels:
