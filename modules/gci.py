@@ -136,8 +136,8 @@ def linking(phenny, input):
         return
 
     s = select(phenny, nick)
-    if not s is None:
-        phenny.reply("{} has already been linked to the GCI module.".format(nick)
+    if not s:
+        phenny.reply("{} has already been linked to the GCI module.".format(nick))
         return
     
     mentor_nick = input.nick.casefold()
