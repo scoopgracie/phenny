@@ -136,3 +136,10 @@ class TestApertiumWiki(unittest.TestCase):
             day_query = str(date(9999, 99, 99))
             out_check = day_query in out
         self.assertFalse(string_check and out_check)
+
+    def test_logs_no_date(self):
+        self.input.group = lambda x: [None, None][x]
+        apertium_wiki.logs(self.phenny, self.input)
+        out = self.phenny.say.call_args[0][0]
+
+        self.assertTrue(('Log at ' in out) and (not out.endswith('.log')))
