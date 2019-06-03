@@ -31,7 +31,7 @@ fileStatTypeMapping = {
     'Bidix': {'Entries': 'stems'},
     'MetaBidix': {'Stems': 'meta stems'},
     'Lexc': {'Stems': 'stems', 'VanillaStems': 'vanilla stems'},
-    'Rlx': {'Rules': 'rlx rules'},
+    'Rlx': {'Rules': 'rules'},
     'Transfer': {'Rules': 'rules', 'Macros': 'macros'}
 }
 
