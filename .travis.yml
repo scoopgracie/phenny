@@ -8,9 +8,9 @@ cache:
     - ~/.phenny/cache
 
 python:
-    - "3.4"
-    - "3.5"
     - "3.6"
+    - "3.7"
+    - "3.8"
     - "nightly"
 
 install: travis_retry pip install -r requirements.txt
