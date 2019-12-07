@@ -45,8 +45,13 @@ restart_bot() {
         if [ $? -gt 0 ]; then
             exit -1
         fi
+        times=0
         while [ $(ps -e | grep $(cat /var/run/$BOT.pid) ]; do
             sleep 1
+            times=$(($times+1))
+            if [ times -eq 60 ]; then
+                kill -9 $(cat /var/run/$BOT.pid)
+            fi
         done
         start_bot
 }
@@ -62,11 +67,11 @@ case "$1" in
         ;;
     restart)
         echo "Restarting $BOT"
-        start_bot
+        restart_bot
         ;;
     force-reload)
         echo "Restarting $BOT"
-        start_bot
+        restart_bot
         ;;
     status)
         if [ -e /var/run/$BOT.pid ]; then
