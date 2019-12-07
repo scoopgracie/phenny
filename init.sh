@@ -40,6 +40,17 @@ stop_bot() {
     return $SUCCESS
 }
 
+restart_bot() {
+        stop_bot
+        if [ $? -gt 0 ]; then
+            exit -1
+        fi
+        while [ $(ps -e | grep $(cat /var/run/$BOT.pid) ]; do
+            sleep 1
+        done
+        start_bot
+}
+
 case "$1" in
     start)
         echo "Starting $BOT"
@@ -51,20 +62,10 @@ case "$1" in
         ;;
     restart)
         echo "Restarting $BOT"
-        stop_bot
-        if [ $? -gt 0 ]; then
-            exit -1
-        fi
-	sleep 5 #even on a slow server, it should stop in under 5 seconds 
         start_bot
         ;;
     force-reload)
         echo "Restarting $BOT"
-        stop_bot
-        if [ $? -gt 0 ]; then
-            exit -1
-        fi
-	sleep 5 #even on a slow server, it should stop in under 5 seconds 
         start_bot
         ;;
     status)
@@ -80,4 +81,3 @@ case "$1" in
 esac
 
 exit 0
-
