@@ -46,7 +46,7 @@ restart_bot() {
             exit 1
         fi
         times=0
-        while [ $(ps -e | grep $(cat /var/run/$BOT.pid)) ]; do
+        while [ $(ps -e | grep -c $(cat /var/run/$BOT.pid)) != 0 ]; do
             sleep 1
             times=$(($times+1))
             if [ times >= 60 ]; then
@@ -54,7 +54,7 @@ restart_bot() {
             fi
         done
         times=0
-        while [ $(ps -e | grep $(cat /var/run/$BOT.pid)) ]; do
+        while [ $(ps -e | grep -c $(cat /var/run/$BOT.pid)) != 0 ]; do
             sleep 1
             times=$(($times+1))
             if [ times >= 15 ]; then
