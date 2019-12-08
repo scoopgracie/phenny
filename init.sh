@@ -43,17 +43,29 @@ stop_bot() {
 restart_bot() {
         stop_bot
         if [ $? -gt 0 ]; then
-            exit -1
+            exit 1
         fi
         times=0
-        while [ $(ps -e | grep $(cat /var/run/$BOT.pid) ]; do
+        while [ $(ps -e | grep $(cat /var/run/$BOT.pid)) ]; do
             sleep 1
             times=$(($times+1))
             if [ times -eq 60 ]; then
                 kill -9 $(cat /var/run/$BOT.pid)
             fi
         done
+        times=0
+        while [ $(ps -e | grep $(cat /var/run/$BOT.pid)) ]; do
+            sleep 1
+            times=$(($times+1))
+            if [ times -eq 15 ]; then
+                echo "ERROR: $BOT did not stop"
+                exit 1
+            fi
+        done
         start_bot
+        if [ $? -gt 0 ]; then
+            exit 1
+        fi
 }
 
 case "$1" in
