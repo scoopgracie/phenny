@@ -27,6 +27,11 @@ Enjoy!
 You will need the Python3 versions of `python-nose` and `python-mock`. To run
 the tests, simply run `nosetests3`.
 
+## SECURITY WARNING
+If security is a concern, **DISABLE `pester`**! It can be used to crash the bot with no admin permissions needed.
+
+    <botname>: pester <botname> tell <anyone> <anything>
+
 ## Authors
 * Sean B. Palmer, http://inamidst.com/sbp/
 * mutantmonkey, http://mutantmonkey.in
