@@ -42,8 +42,8 @@ extra = []
 
 # Services to load: maps channel names to white or black lists
 external = {
-    '#liberal': ['!'], # allow all
-    '#conservative': [], # allow none
+    '#everything': ['!'], # allow all
+    '#nothing': [], # allow none
     '*': ['!'] # default whitelist, allow all
 }
 
