@@ -30,3 +30,4 @@ the tests, simply run `nosetests3`.
 ## Authors
 * Sean B. Palmer, http://inamidst.com/sbp/
 * mutantmonkey, http://mutantmonkey.in
+* Apertium developers, especially GCI students
