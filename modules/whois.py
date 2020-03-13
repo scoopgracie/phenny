@@ -67,6 +67,12 @@ def all_of(items):
         response += 'and {}'.format(items[len(items)-1])
         return response
 
+def say_username(site, username, page_template, phenny):
+    if page_template is not None:
+        phenny.say('{}: [{}]({})'.format(site, username, page_template.format(username)))
+    else:
+        phenny.say('{}: {}'.format(site, username))
+
 def whois(phenny, input):
     '''.whois <nick> - get info for registered nick; set data with .whoisset (see .help whoisset); admins or nick owners can drop with .whoisdrop <nick> '''
     bynick = True
@@ -140,6 +146,16 @@ def whois(phenny, input):
         realnamestring = ( ' ({})'.format(user.realname) if user.realname is not None else '')
 
         phenny.say('{}{}{}{}'.format(user.nick, realnamestring, locstring, seen_string))
+
+        if user.isgci and not user.isadmin:
+            say_username('GCI/GSOC', user.wiki, None, phenny)
+
+        if user.wiki is not None:
+            say_username('Apertium Wiki', user.wiki, 'http://wiki.apertium.org/wiki/User:{}', phenny)
+
+        if user.github is not None:
+            say_username('GitHub', user.github, 'https://github.com/{}', phenny)
+
     except Exception as e:
         phenny.say('Sorry, an error occurred.')
         raise e
