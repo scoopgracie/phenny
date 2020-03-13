@@ -33,9 +33,38 @@ def scrape_ethnologue_codes(phenny):
         web.with_scraped_page(base_url + letter)(scrape_ethnologue_code)()
     phenny.ethno_data = data
 
+def scrape_iso_codes(phenny):
+    # see https://iso639-3.sil.org/code_tables/download_tables
+    # for more information
+    iso = {}
+    ethno = {}
+    convert = {}
+    codes = web.get('https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab')
+    for entry in codes.splitlines()[1:]:
+        values = entry.split('\t')
+        code3 = values[0]
+        code2b = values[1]
+        code2t = values[2]
+        code1 = values[3]
+        name = values[6]
+        values = entry.split('\t')
+        if code2b:
+            iso[code2b] = name
+        if code2t:
+            iso[code2t] = name
+        if code1:
+            iso[code1] = name
+            convert[code1] = code3
+            convert[code3] = code1
+        iso[code3] = name
+        ethno[code3] = name
+    phenny.ethno_data = ethno
+    phenny.iso_data = iso
+    phenny.iso_conversion_data = convert
+
 def write_ethnologue_codes(phenny, raw=None):
     if raw is None or raw.admin:
-        scrape_ethnologue_codes(phenny)
+        scrape_iso_codes(phenny)
         logger.debug('Ethnologue iso-639 code fetch successful')
         if raw:
             phenny.say('Ethnologue iso-639 code fetch successful')
@@ -122,4 +151,4 @@ ethnologue.example = '.ethnologue khk'
 ethnologue.priority = 'low'
 
 def setup(phenny):
-    scrape_ethnologue_codes(phenny)
+    scrape_iso_codes(phenny)
