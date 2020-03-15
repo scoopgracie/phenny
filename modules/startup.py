@@ -59,16 +59,28 @@ def startup(phenny, input):
 
     if hasattr(phenny.config, 'password'): 
         phenny.msg('NickServ', 'IDENTIFY %s' % phenny.config.password)
-        time.sleep(5)
+    else:
+        afterauth(phenny, input)
 
+startup.rule = r'(.*)'
+startup.event = '251'
+startup.priority = 'low'
+
+def afterauth(phenny, input):
+    global afterauth
+
+    logger.info('authed')
     # Cf. http://swhack.com/logs/2005-12-05#T19-32-36
     for channel in phenny.channels: 
         phenny.proto.join(channel)
         logger.info(channel)
-        time.sleep(0.5)
-startup.rule = r'(.*)'
-startup.event = '251'
-startup.priority = 'low'
+
+    afterauth.event = None
+
+afterauth.rule = r'.*identified for.*'
+afterauth.event = 'NOTICE'
+afterauth.priority = 'high'
+afterauth.thread = False
 
 if __name__ == '__main__': 
     print(__doc__.strip())
