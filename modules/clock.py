@@ -299,22 +299,6 @@ def beats(phenny, input):
 beats.commands = ['beats']
 beats.priority = 'low'
 
-def divide(input, by):
-    return (input // by), (input % by)
-
-def yi(phenny, input):
-    """Shows whether it is currently yi or not."""
-    quadraels, remainder = divide(int(time.time()), 1753200)
-    raels = quadraels * 4
-    extraraels, remainder = divide(remainder, 432000)
-    if extraraels == 4:
-        return phenny.say('Yes! PARTAI!')
-    elif extraraels == 3:
-          return phenny.say('Soon...')
-    else: phenny.say('Not yet...')
-yi.commands = ['yi']
-yi.priority = 'low'
-
 def tock(phenny, input):
     """Shows the time from the USNO's atomic clock."""
     info = web.head('http://tycho.usno.navy.mil/cgi-bin/timer.pl')

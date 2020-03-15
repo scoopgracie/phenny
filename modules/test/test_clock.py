@@ -64,24 +64,6 @@ class TestClock(unittest.TestCase):
         self.phenny.say.assert_called_with('@314')
 
     @catch_timeout
-    def test_yi_normal(self, mock_time):
-        mock_time.return_value = 369182
-        clock.yi(self.phenny, None)
-        self.phenny.say.assert_called_with('Not yet...')
-
-    @catch_timeout
-    def test_yi_soon(self, mock_time):
-        mock_time.return_value = 1339419000
-        clock.yi(self.phenny, None)
-        self.phenny.say.assert_called_with('Soon...')
-
-    @catch_timeout
-    def test_yi_now(self, mock_time):
-        mock_time.return_value = 1339419650
-        clock.yi(self.phenny, None)
-        self.phenny.say.assert_called_with('Yes! PARTAI!')
-
-    @catch_timeout
     def test_tock(self, mock_time):
         clock.tock(self.phenny, None)
         out = self.phenny.say.call_args[0][0]
