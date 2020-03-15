@@ -294,13 +294,6 @@ thread_check_tz.commands = ['tzdb status']
 def setup(phenny):
     scrape_wiki_zones(phenny)
 
-def tock(phenny, input):
-    """Shows the time from the USNO's atomic clock."""
-    info = web.head('http://tycho.usno.navy.mil/cgi-bin/timer.pl')
-    phenny.say('"' + info['Date'] + '" - tycho.usno.navy.mil')
-tock.commands = ['tock']
-tock.priority = 'high'
-
 def npl(phenny, input):
     """Shows the time from NPL's SNTP server."""
     # for server in ('ntp1.npl.co.uk', 'ntp2.npl.co.uk'):

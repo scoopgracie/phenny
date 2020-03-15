@@ -52,14 +52,6 @@ class TestClock(unittest.TestCase):
             "Sorry, I don't know about the 'FIZZ' timezone.")
 
     @catch_timeout
-    def test_tock(self, mock_time):
-        clock.tock(self.phenny, None)
-        out = self.phenny.say.call_args[0][0]
-        m = re.match('^.* - tycho.usno.navy.mil$',
-                out, flags=re.UNICODE)
-        self.assertTrue(m)
-
-    @catch_timeout
     def test_npl(self, mock_time):
         clock.npl(self.phenny, None)
         out = self.phenny.say.call_args[0][0]

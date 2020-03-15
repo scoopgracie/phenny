@@ -20,14 +20,14 @@ class TestIssue(unittest.TestCase):
         mock_response.return_value = '{"html_url": "https://github.com/test/test"}'
         mock_post.return_value = mock_response.return_value
         
-        mock_body = json.dumps({ "title": "Create a test issue.", "body": "This issue was automatically made by begiak, Apertium\'s beloved IRC bot, by the order of tester on #apertium. A human is yet to update the description."})
+        mock_body = json.dumps({ "title": "Create a test issue.", "body": "This issue was automatically made by begiak, Apertium\'s beloved IRC bot, by the order of tester on #apertium. A human still needs to update the description."})
         mock_head = {'Authorization': 'token test_token'}
         self.input.group = lambda x: ['.issue', 'test/test Create a test issue.'][x]
         self.input.group.return_value = mock_response
         issue.issue(self.phenny, self.input)
         
         mock_post.assert_called_with('https://api.github.com/repos/test/test/issues', mock_body, mock_head)
-        self.phenny.reply.assert_called_with('Issue created. You can add a description at https://github.com/test/test')
+        self.phenny.reply.assert_called_with('Issue created. You should add a description at https://github.com/test/test')
              
     def test_illegal(self):
         self.input.group = lambda x: ['.issue', 'octocat/Hello-World Create an illegal issue.'][x]
