@@ -52,18 +52,6 @@ class TestClock(unittest.TestCase):
             "Sorry, I don't know about the 'FIZZ' timezone.")
 
     @catch_timeout
-    def test_beats_zero(self, mock_time):
-        mock_time.return_value = 0
-        clock.beats(self.phenny, None)
-        self.phenny.say.assert_called_with('@041')
-
-    @catch_timeout
-    def test_beats_normal(self, mock_time):
-        mock_time.return_value = 369182
-        clock.beats(self.phenny, None)
-        self.phenny.say.assert_called_with('@314')
-
-    @catch_timeout
     def test_tock(self, mock_time):
         clock.tock(self.phenny, None)
         out = self.phenny.say.call_args[0][0]
