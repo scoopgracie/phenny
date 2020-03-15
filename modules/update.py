@@ -2,8 +2,8 @@ import subprocess
 import os
 import sys
 
-def checkup(phenny, input):
-    """.checkup - Check if begiak is up"""
+def update(phenny, input):
+    """.update - Make begiak check for updates and restart"""
     phenny.say("Pulling new source code...")
     if subprocess.call(['git', 'pull']) == 0:
         phenny.say("Successfully pulled...")
@@ -15,6 +15,6 @@ def checkup(phenny, input):
     phenny.say("If I rejoin, I succeeded.")
     os.execv('./phenny', sys.argv)
 
-checkup.commands = ['update']
-checkup.priority = 'high'
-checkup.example = '.update'
+update.commands = ['update']
+update.priority = 'high'
+update.example = '.update'
