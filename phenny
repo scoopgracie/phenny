@@ -23,8 +23,8 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger('phenny')
 
 def check_python_version(): 
-    if sys.version_info < (3, 4):
-        logger.critical('Requires Python 3.4 or later, from www.python.org')
+    if sys.version_info < (3, 5):
+        logger.critical('Requires Python 3.5 or later, from www.python.org')
         sys.exit(1)
 
 def create_default_config(path):
