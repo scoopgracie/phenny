@@ -59,11 +59,13 @@ def startup(phenny, input):
 
     if hasattr(phenny.config, 'password'): 
         phenny.msg('NickServ', 'IDENTIFY %s' % phenny.config.password)
+        time.sleep(5)
 
     # Cf. http://swhack.com/logs/2005-12-05#T19-32-36
     for channel in phenny.channels: 
         phenny.proto.join(channel)
         logger.info(channel)
+        time.sleep(0.5)
 startup.rule = r'(.*)'
 startup.event = '251'
 startup.priority = 'low'
