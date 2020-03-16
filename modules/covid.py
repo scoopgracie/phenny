@@ -14,7 +14,7 @@ def covid(phenny, input):
     cases, deaths, recovered = scrape_stats()
     current = format(int(cases.replace(',', '')) - ( int(deaths.replace(',', '')) + int(recovered.replace(',', '')) ), ',d')
     phenny.say('Cases\t\t{}'.format(cases))
-    phenny.say('Current\t\t{}'.format(current))
+    phenny.say('Current\t{}'.format(current))
     phenny.say('Deaths\t\t{}'.format(deaths))
     phenny.say('Recovered\t{}'.format(recovered))
     phenny.say('Recovery rate\t\t{}%'.format(round(int(recovered.replace(',', ''))/int(cases.replace(',', '')) * 10000) / 100))
