@@ -33,6 +33,6 @@ def getquote(phenny, input):
         phenny.say('{} [+{} (+{}%)]'.format(price, change, stock.increasePercent))
     else:
         phenny.say('{} [{} ({}%)]'.format(price, change, stock.increasePercent))
-getquote.commands = ['stock']
+getquote.commands = ['stock', '.quote']
 getquote.priority = 'low'
 getquote.example = '.stock KR'
