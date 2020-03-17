@@ -1,4 +1,12 @@
-import stockquotes
+import logging
+
+logger = logging.getLogger('phenny')
+
+try:
+    import stockquotes
+except:
+    logger.warn('Please install Beautiful Soup 4 and Requests for the stocks module to work!')
+    del getquote
 
 def getquote(phenny, input):
     """.stock <ticker> - Check stock quote"""
