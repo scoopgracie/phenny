@@ -112,7 +112,7 @@ class TestAPy(unittest.TestCase):
         # restricted length for non-admin
         self.input.admin = False
         self.check_exceptions(['eng-spa ' + self.texts['eng_long']],
-                              apy.apertium_translate, 'long non-admin translation!')
+                              apy.apertium_translate, 'Phrase must be under 350 characters.')
         self.reset_mocks(self.phenny, mock_open)
 
         # non-restricted length for admin

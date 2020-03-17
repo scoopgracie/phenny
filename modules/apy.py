@@ -85,12 +85,12 @@ def apertium_translate(phenny, input):
                         input.group(1), apertium_translate)
     
     if line_error:
-        phenny.say(line_error)
+        raise GrumbleError(line_error)
         return
 
     if (len(line.group(2)) > 350) and (not input.admin):
-        #raise GrumbleError('Phrase must be under 350 characters.')
-        phenny.say('Phrase must be under 350 characters.')
+        raise GrumbleError('Phrase must be under 350 characters.')
+        #phenny.say('Phrase must be under 350 characters.')
 
     blocks = line.group(1).split(' ')
     for block in blocks:
@@ -98,8 +98,8 @@ def apertium_translate(phenny, input):
         translated = line.group(2)
         for (input_lang, output_lang) in [pair.split('-') for pair in pairs]:
             if input_lang == output_lang:
-                #raise GrumbleError('Stop trying to confuse me! Pick different languages ;)')
-                phenny.say('Stop trying to confuse me! Pick different languages ;)')
+                raise GrumbleError('Stop trying to confuse me! Pick different languages ;)')
+                #phenny.say('Stop trying to confuse me! Pick different languages ;)')
             
             # TODO: Remove this try/except block? web.decode doesn't seem to raise any GrumbleError's
             try:
@@ -192,7 +192,7 @@ def apertium_analyse(phenny, input):
     cmd, cmd_error = strict_check(r'(' + langRE + r')\s+(.*)', input.group(1), apertium_analyse)
 
     if cmd_error:
-        phenny.say(cmd_error)
+        raise GrumbleError(cmd_error)
         return
 
     opener = urllib.request.build_opener()
@@ -223,7 +223,7 @@ def apertium_generate(phenny, input):
     cmd, cmd_error = strict_check(r'(' + langRE + r')\s+(.*)', input.group(1), apertium_generate)
 
     if cmd_error:
-        phenny.say(cmd_error)
+        raise GrumbleError(cmd_error)
         return
 
     opener = urllib.request.build_opener()
@@ -349,7 +349,7 @@ def apertium_calccoverage(phenny, input):
     cmd, cmd_error = strict_check(r'(' + langRE + r')\s+(.*)', input.group(1), apertium_calccoverage)
 
     if cmd_error:
-        phenny.say(cmd_error)
+        raise GrumbleError(cmd_error)
         return
 
     opener = urllib.request.build_opener()
@@ -376,7 +376,7 @@ def apertium_perword(phenny, input):
     valid_funcs = {'tagger', 'disambig', 'biltrans', 'translate', 'morph'}
 
     if cmd_error:
-        phenny.say(cmd_error)
+        raise GrumbleError(cmd_error)
         return
 
     # validate requested functions
