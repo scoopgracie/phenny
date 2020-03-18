@@ -5,7 +5,7 @@ author: mutantmonkey <mutantmonkey@mutantmonkey.in>
 """
 
 import random
-from modules import language as ethnologue
+from modules import ethnologue
 from lxml import html, etree
 import web
 import os
@@ -156,6 +156,16 @@ def thread_check(phenny, raw):
             break
     else:
         phenny.say('No ISO code updating thread running')
+
+def setup(phenny):
+    # populate ethnologue codes
+    ethnologue.setup(phenny)
+
+    # phenny.iso_data = scrape_wiki_codes()
+    # phenny.iso_data.update(phenny.ethno_data)
+
+    # Conversion hash
+    # phenny.iso_conversion_data = scrape_wiki_codes_convert()
 
 
 iso639.name = 'iso639'
