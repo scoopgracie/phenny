@@ -81,6 +81,22 @@ def with_scraped_page(url, **kw):
 
     return decorator
 
+def with_scraped_page_no_cache(url, **kw):
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kw):
+            try:
+                doc = lhtml.document_fromstring(get(url, cache=False, **kw))
+                return fn(doc, *args, **kw)
+            except Exception:
+                write_cache(url, None)
+                doc = lhtml.document_fromstring(get(url, cache=False, **kw))
+                return fn(doc, *args, **kw)
+
+        return wrapper
+
+    return decorator
+
 def get(url, cache=False, headers={}, verify=True, timeout=REQUEST_TIMEOUT, **kwargs):
     if not url.startswith('http'):
         return

@@ -4,7 +4,7 @@ covid.py - Phenny Coronavirus Module
 
 import web
 
-@web.with_scraped_page('https://www.worldometers.info/coronavirus/')
+@web.with_scraped_page_no_cache('https://www.worldometers.info/coronavirus/')
 def scrape_stats(doc):
     elements = doc.find_class('maincounter-number')
     return ( i.text_content().strip() for i in elements )
@@ -23,6 +23,6 @@ def covid(phenny, input):
     phenny.say('This is not medical advice.')
 
     
-covid.commands = ['covid', 'covid19', 'coronavirus', '2019ncov', 'sarscov2']
+covid.commands = ['covid', 'covid19', 'coronavirus', '2019ncov', 'sarscov2', 'corona', 'pandemic']
 covid.example = '.covid'
 covid.priority = 'medium'
