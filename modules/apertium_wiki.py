@@ -72,7 +72,7 @@ def logs(phenny, input):
     if date_query:
         date_query = date_query.lower().strip()
 
-    endpoints['log'] = "{0}%23{1}/".format(endpoints['logs'], phenny.channels[0][1:])
+    endpoints['log'] = "{0}".format(endpoints['logs'])
 
     if not date_query:
         # .logs
