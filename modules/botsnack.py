@@ -21,7 +21,7 @@ logger = logging.getLogger('phenny')
 
 # the rate that affects how much eating a snack nourishes the bot
 # smaller number = less nourishment = more snacks can be eaten (before fullness)
-# larger number = more nourishment = less snacks can be eaten
+# larger number = more nourishment = fewer snacks can be eaten
 r_eat = 0.05
 
 # the rate that affects how fast the bot becomes hungry over time
