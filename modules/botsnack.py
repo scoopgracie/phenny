@@ -82,9 +82,7 @@ def botsnack(phenny, input):
         botsnack.coolingperiod = random.uniform(3,10)*60
         botsnack.coolingstarted = now
         botsnack.coolingdown = True
-        return
-
-    if botsnack.hunger > 90:
+    elif botsnack.hunger > 90:
         messages = ["I don't think this will fit...", "Ugh, no more please", "Seriously, I can't eat anymore!", "/me shudders but downs the snack anyways"]
     elif botsnack.hunger > 70:
         messages = ["Thanks, but that's enough", "If you insist"]
