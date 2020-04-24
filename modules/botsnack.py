@@ -87,15 +87,15 @@ def botsnack(phenny, input):
     if botsnack.hunger > 90:
         messages = ["I don't think this will fit...", "Ugh, no more please", "Seriously, I can't eat anymore!", "/me shudders but downs the snack anyways"]
     elif botsnack.hunger > 70:
-        messages = ["Thanks, but that's enough", "I suppose I could have one more", "If you insist"]
+        messages = ["Thanks, but that's enough", "If you insist"]
     elif botsnack.hunger > 50:
         messages = ["Om nom nom", "Delicious, thanks!", "Yummy!", "Wow! That's delicious"]
     elif botsnack.hunger > 30:
         messages = ["That really hit the spot!", "/me smacks lips", "Mmmmm!"]
     elif botsnack.hunger > 10:
-        messages = ["Awww yea, that was tasty", "/me munches rudely", "Do you have any more?"]
+        messages = ["Awww yea, that was tasty", "/me munches rudely"]
     elif botsnack.hunger > 1:
-        messages = ["/me noms furiously", "I really needed that!", "I'll take another!"]
+        messages = ["/me noms furiously", "I really needed that!"]
     else:
         messages = ["I'M STARVING. GIVE ME MORE!", "/me gnaws ravenously on the snack with a starved look"]
 
