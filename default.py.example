@@ -20,7 +20,7 @@ gitbots = ['ApertiumBot']
 # leave the api key blank to not use them and be sure to add the 'linx' module to the ignore list.
 linx_api_key = ""
 
-APy_url = "http://apy.projectjj.com"
+APy_url = "https://apertium.org/apy"
 APy_analyseURL = "http://turkic.apertium.org:8080"
 
 

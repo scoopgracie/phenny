@@ -61,7 +61,7 @@ def translate(phenny, translate_me, input_lang, output_lang='en'):
     try:
         apy_url = phenny.config.APy_url
     except:
-        apy_url = 'http://apy.projectjj.com'
+        apy_url = 'https://apertium.org/apy'
 
     try:
         response = opener.open('{:s}/translate?q={:s}&langpair={:s}|{:s}'.format(
