@@ -27,7 +27,7 @@ Enjoy!
 You will need the Python3 versions of `python-nose` and `python-mock`. To run
 the tests, simply run `nosetests3`.
 
-##Security
+## Security
 You may want to disable `update`. Due to a known but unexplained bug, spamming
 `.update` repeatedly makes the process go into the background. If you know
 why, please submit an issue!
