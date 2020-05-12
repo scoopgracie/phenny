@@ -28,9 +28,11 @@ You will need the Python3 versions of `python-nose` and `python-mock`. To run
 the tests, simply run `nosetests3`.
 
 ## Security
-You may want to disable `update`. Due to a known but unexplained bug, spamming
-`.update` repeatedly makes the process go into the background. If you know
-why, please submit an issue!
+You may want to disable `pester`. It can be used to crash the bot with no admin permissions needed.
+
+    <botname>: pester <botname> tell <anyone> <anything>
+
+You may also want to disable `update`. Due to a known bug, spamming `.update` repeatedly makes the process go into the background.
 
 ## Authors
 * Sean B. Palmer, http://inamidst.com/sbp/
