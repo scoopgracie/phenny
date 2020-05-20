@@ -55,22 +55,22 @@ def c_alias(phenny, raw):
             elif (nick1 == nick2):
                 phenny.reply("I don't think that will be necessary.")
             elif (nick2 in aliasGroupFor(nick1)):  
-                phenny.reply("You and " + nick2 + " are already paired.")
+                phenny.reply(f"You and {nick2} are already paired.")
             elif ([nick2, nick1] in nick_pairs):
                 nick_pairs.remove([nick2, nick1])
                 aliasPairMerge(phenny, nick1, nick2)
-                phenny.reply("Confirmed alias request with " + nick2 + ". Your current aliases are: " + ', '.join(aliasGroupFor(nick1)) + ".")
+                phenny.reply(f"Confirmed alias request with {nick2}. Your current aliases are: {', '.join(aliasGroupFor(nick1))}.")
             elif ([nick1, nick2] in nick_pairs):
-                phenny.reply("Alias request already exists. Switch your nick to " + nick2 + " and call \".alias add " + nick1 + "\" to confirm.")
+                phenny.reply(f"Alias request already exists. Switch your nick to {nick2} and call \".alias add {nick1}\" to confirm.")
             else:
                 nick_pairs.append([nick1, nick2])
-                phenny.reply("Alias request created. Switch your nick to " + nick2 + " and call \".alias add " + nick1 + "\" to confirm.")
+                phenny.reply(f"Alias request created. Switch your nick to {nick2} and call \".alias add {nick1}\" to confirm.")
         elif raw.group(1) == 'list':
             if raw.group(2):
                 nick = raw.group(2)
-                phenny.reply("%s's current aliases are: " % nick + ', '.join(aliasGroupFor(nick)) + ".")
+                phenny.reply(f"{nick}'s current aliases are: {', '.join(aliasGroupFor(nick))}.")
             else:
-               phenny.reply("Your current aliases are: " + ', '.join(aliasGroupFor(raw.nick)) + ".")
+               phenny.reply(f"Your current aliases are: {', '.join(aliasGroupFor(raw.nick))}.")
         elif raw.group(1) == 'remove':
             nick = raw.nick
             group = aliasGroupFor(nick)
@@ -79,7 +79,7 @@ def c_alias(phenny, raw):
                 group.remove(nick)
                 nick_aliases.append(group)
                 dumpAliases(phenny)
-            phenny.reply("You have removed %s from its alias group" % nick)
+            phenny.reply(f"You have removed {nick} from its alias group")
         else:
             phenny.reply("Usage: .alias add <nick>, .alias list <nick>?, .alias remove")
     else:
