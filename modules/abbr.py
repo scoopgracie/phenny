@@ -38,9 +38,9 @@ def abbr(phenny, input):
     text = input.group().split(' ', 1)[1]
 
     try:
-        phenny.say('{} means "{}"'.format(text, abbrs[text]))
+        phenny.say(f'{text} means "{abbrs[text]}"')
     except KeyError as e:
-        phenny.say("I'm not sure what {} means.".format(text))
+        phenny.say(f"I'm not sure what {text} means.")
 
 abbr.commands = ['abbr']
 abbr.priority = 'medium'
