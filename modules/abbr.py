@@ -4,7 +4,7 @@ abbrs = {
     "lol": "laugh out loud",
     "omg": "oh my gosh",
     "rofl": "rolling on the floor laughing",
-    "nn": "neural network; night nigh",
+    "nn": "neural network; night night",
     "roflol": "rolling on the floor laughing out loud",
     "brb": "be right back",
     "bbif": "be back in a few",
